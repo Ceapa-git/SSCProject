@@ -3,21 +3,21 @@ package org.ssc.model.variable;
 import org.ssc.model.Block;
 
 public class PrintVariable extends Block {
+    private String name;
 
     public PrintVariable() {
+        this.name= null;
     }
 
-    public void print() {
-        Variable<?> value;
-        if(this.getConnection(0) == null){
-            System.out.println("null");
-            return;
-        }
-        value = (Variable<?>) this.getConnection(0);
-        if(value.getValue()== null ){
-            System.out.println("null");
-            return;
-        }
-        System.out.print(value.getPrint());
+    public PrintVariable(String name) {
+        this.name= name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

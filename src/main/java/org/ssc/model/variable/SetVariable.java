@@ -3,21 +3,21 @@ package org.ssc.model.variable;
 import org.ssc.model.Block;
 
 public class SetVariable extends Block {
-    private Variable<?> value;
+    private String name;
 
     public SetVariable() {
-        this.value = null;
+        this.name = null;
     }
 
-    public SetVariable(Variable<?> value) {
-        this.value = value;
+    public SetVariable(String name) {
+        this.name = name;
     }
 
-    public void setValue(Variable<?> value) {
-        this.value = value;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Variable<?> getValue() {
-        return value;
+    public String getName() {
+        return this.name;
     }
 }

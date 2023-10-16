@@ -1,6 +1,7 @@
 package org.ssc.model.variable.type;
 
 import org.ssc.model.Block;
+import org.ssc.model.TypeMismatchException;
 import org.ssc.model.variable.Variable;
 
 public class VFloat extends Block implements Variable<Float> {
@@ -27,8 +28,19 @@ public class VFloat extends Block implements Variable<Float> {
     }
 
     @Override
-    public void setValue(Object value) {
-        if(this.value.getClass().isInstance(value)) this.value = (Float) value;
+    public void setValue(Object value) throws TypeMismatchException {
+        if(value instanceof Float) this.value = (Float) value;
+        else if(value instanceof Double) this.value = ((Double) value).floatValue();
+        else if(value instanceof Integer) this.value = ((Integer) value).floatValue();
+        else throw new TypeMismatchException();
+    }
+
+    @Override
+    public void changeValue(Object value) throws TypeMismatchException {
+        if(value instanceof Float) this.value += (Float) value;
+        else if(value instanceof Double) this.value += ((Double) value).floatValue();
+        else if(value instanceof Integer) this.value += ((Integer) value).floatValue();
+        else throw new TypeMismatchException();
     }
 
     @Override

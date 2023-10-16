@@ -50,6 +50,7 @@ public class Block {
     public int addConnection(Block connection,int id){
         if(id<0) this.connections.add(connection);
         else this.connections.set(id,connection);
+        this.connections.get(this.connections.indexOf(connection)).setPrevious(this);
 
         return this.connections.indexOf(connection);
     }

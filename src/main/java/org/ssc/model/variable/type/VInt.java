@@ -1,6 +1,7 @@
 package org.ssc.model.variable.type;
 
 import org.ssc.model.Block;
+import org.ssc.model.TypeMismatchException;
 import org.ssc.model.variable.Variable;
 
 public class VInt extends Block implements Variable<Integer> {
@@ -27,8 +28,15 @@ public class VInt extends Block implements Variable<Integer> {
     }
 
     @Override
-    public void setValue(Object value) {
-        if(this.value.getClass().isInstance(value)) this.value = (Integer) value;
+    public void setValue(Object value) throws TypeMismatchException {
+        if(value instanceof Integer) this.value = (Integer) value;
+        else throw new TypeMismatchException();
+    }
+
+    @Override
+    public void changeValue(Object value) throws TypeMismatchException {
+        if(value instanceof Integer) this.value += (Integer) value;
+        else throw new TypeMismatchException();
     }
 
     @Override
