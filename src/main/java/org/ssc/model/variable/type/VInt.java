@@ -2,24 +2,14 @@ package org.ssc.model.variable.type;
 
 import org.ssc.model.Block;
 import org.ssc.model.TypeMismatchException;
+import org.ssc.model.math.InvalidOperation;
 import org.ssc.model.variable.Variable;
 
 public class VInt extends Block implements Variable<Integer> {
     private Integer value;
-    private String name;
 
     public VInt() {
         this.value = 0;
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name=name;
     }
 
     @Override
@@ -37,6 +27,51 @@ public class VInt extends Block implements Variable<Integer> {
     public void changeValue(Object value) throws TypeMismatchException {
         if(value instanceof Integer) this.value += (Integer) value;
         else throw new TypeMismatchException();
+    }
+
+    @Override
+    public Variable<Integer> add(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VInt result = new VInt();
+        result.value = this.value;
+        result.value += ((VInt)value).getValue();
+        return result;
+    }
+
+    @Override
+    public Variable<Integer> sub(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VInt result = new VInt();
+        result.value = this.value;
+        result.value -= ((VInt)value).getValue();
+        return result;
+    }
+
+    @Override
+    public Variable<Integer> mul(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VInt result = new VInt();
+        result.value = this.value;
+        result.value *= ((VInt)value).getValue();
+        return result;
+    }
+
+    @Override
+    public Variable<Integer> div(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VInt result = new VInt();
+        result.value = this.value;
+        result.value /= ((VInt)value).getValue();
+        return result;
+    }
+
+    @Override
+    public Variable<Integer> mod(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VInt result = new VInt();
+        result.value = this.value;
+        result.value %= ((VInt)value).getValue();
+        return result;
     }
 
     @Override

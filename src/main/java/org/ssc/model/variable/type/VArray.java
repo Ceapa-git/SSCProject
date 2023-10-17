@@ -2,14 +2,13 @@ package org.ssc.model.variable.type;
 
 import org.ssc.model.Block;
 import org.ssc.model.TypeMismatchException;
+import org.ssc.model.math.InvalidOperation;
 import org.ssc.model.variable.Variable;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class VArray<T extends Variable<?>> extends Block implements Variable<ArrayList<T>> {
     private ArrayList<T> value;
-    private String name;
     private final boolean isChar;
 
     public VArray() {
@@ -20,16 +19,6 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     public VArray(boolean isChar) {
         this.isChar=isChar;
         this.value = new ArrayList<>();
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name=name;
     }
 
     @Override
@@ -46,6 +35,31 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     @Override
     public void changeValue(Object value) throws TypeMismatchException {
         throw new TypeMismatchException();
+    }
+
+    @Override
+    public Variable<ArrayList<T>> add(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
+    }
+
+    @Override
+    public Variable<ArrayList<T>> sub(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
+    }
+
+    @Override
+    public Variable<ArrayList<T>> mul(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
+    }
+
+    @Override
+    public Variable<ArrayList<T>> div(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
+    }
+
+    @Override
+    public Variable<ArrayList<T>> mod(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
     }
 
     @Override

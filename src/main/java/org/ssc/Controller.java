@@ -1,6 +1,7 @@
 package org.ssc;
 
 import org.ssc.model.Block;
+import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
 import org.ssc.model.variable.SetVariable;
@@ -10,10 +11,8 @@ import org.ssc.model.variable.type.VChar;
 import org.ssc.model.variable.type.VFloat;
 import org.ssc.model.variable.type.VInt;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class Controller {
     private static HashMap<String, Variable<?>> variables;
@@ -33,21 +32,21 @@ public class Controller {
 
         current.setNext(new SetVariable("a"));
         current=current.getNext();
-        current.addConnection(amount1);
+        current.setConnection(amount1);
 
         current.setNext(new PrintVariable("a"));
         current=current.getNext();
 
         current.setNext(new SetVariable("a"));
         current=current.getNext();
-        current.addConnection(amount2);
+        current.setConnection(amount2);
 
         current.setNext(new PrintVariable("a"));
         current=current.getNext();
 
         current.setNext(new ChangeVariable("a"));
         current=current.getNext();
-        current.addConnection(amount3);
+        current.setConnection(amount3);
 
         current.setNext(new PrintVariable("a"));
         current=current.getNext();
@@ -61,14 +60,14 @@ public class Controller {
 
         current.setNext(new SetVariable("b"));
         current=current.getNext();
-        current.addConnection(floatAmount1);
+        current.setConnection(floatAmount1);
 
         current.setNext(new PrintVariable("b"));
         current=current.getNext();
 
         current.setNext(new ChangeVariable("b"));
         current=current.getNext();
-        current.addConnection(floatAmount2);
+        current.setConnection(floatAmount2);
 
         current.setNext(new PrintVariable("b"));
         current=current.getNext();
@@ -82,14 +81,14 @@ public class Controller {
 
         current.setNext(new SetVariable("c"));
         current=current.getNext();
-        current.addConnection(c);
+        current.setConnection(c);
 
         current.setNext(new PrintVariable("c"));
         current=current.getNext();
 
         current.setNext(new ChangeVariable("c"));
         current=current.getNext();
-        current.addConnection(charAmount);
+        current.setConnection(charAmount);
 
         current.setNext(new PrintVariable("c"));
         current=current.getNext();
@@ -104,7 +103,7 @@ public class Controller {
 
         current.setNext(new SetVariable("d"));
         current=current.getNext();
-        current.addConnection(string);
+        current.setConnection(string);
 
         current.setNext(new PrintVariable("d"));
         current=current.getNext();
@@ -119,43 +118,83 @@ public class Controller {
 
         current.setNext(new SetVariable("e"));
         current=current.getNext();
-        current.addConnection(intArray);
+        current.setConnection(intArray);
 
         current.setNext(new PrintVariable("e"));
         current=current.getNext();
 
+        //----------------------------------------------------
 
-        run(start.getNext());
+        VInt int1 = new VInt();
+        int1.setValue(15);
+        VInt int2 = new VInt();
+        int2.setValue(21);
+
+        current.setNext(new PrintVariable("a"));
+        current=current.getNext();
+
+        current.setNext(new SetVariable("a"));
+        current=current.getNext();
+        current.setConnection(new Operator(Operator.Operation.MUL));
+        current.getConnection(0).setConnection(int1,0);
+        current.getConnection(0).setConnection(int2,1);
+
+        current.setNext(new PrintVariable("a"));
+        current=current.getNext();
+
+        run(start);
 
     }
 
     private static void run(Block start){
         Block current = start;
         while(current != null){
-            switch (current.getClass().getSimpleName()) {
-                case "SetVariable": {
+            switch (current.getBlockName()) {
+                case "SetVariable" -> {
                     SetVariable block = (SetVariable) current;
                     String name = block.getName();
-                    Variable<?> value =((Variable<?>) (block.getConnection(0)));
-                    if(!variables.containsKey(name)) variables.put(name,value);
+                    Variable<?> value = compute(block.getConnection(0));
+                    if (!variables.containsKey(name)) variables.put(name, value);
                     else variables.get(name).setValue(value.getValue());
-                    break;
                 }
-                case "PrintVariable": {
+                case "PrintVariable" -> {
                     PrintVariable block = (PrintVariable) current;
                     String name = block.getName();
                     System.out.println(variables.get(name).getPrint());
-                    break;
                 }
-                case "ChangeVariable": {
+                case "ChangeVariable" -> {
                     ChangeVariable block = (ChangeVariable) current;
                     String name = block.getName();
-                    Variable<?> value =((Variable<?>) (block.getConnection(0)));
-                    if(variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
-                    break;
+                    Variable<?> value = compute(block.getConnection(0));
+                    if (variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
                 }
             }
             current= current.getNext();
         }
+    }
+    private static Variable<?> compute(Block current) {
+        if(current instanceof Variable<?>) return (Variable<?>) current;
+        Variable<?> value1,value2;
+        Variable<?> result = new VInt();
+
+        if(!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
+        else value1 = (Variable<?>) current.getConnection(0);
+        if(!(current.getConnection(1) instanceof Variable<?>)) value2 = compute(current.getConnection(1));
+        else value2 = (Variable<?>) current.getConnection(1);
+
+        switch (current.getBlockName()){
+            case "Operator" ->{
+                switch (((Operator) current).getOperation()){
+                    case ADD -> result = value1.add(value2);
+                    case SUB -> result = value1.sub(value2);
+                    case MUL -> result = value1.mul(value2);
+                    case DIV -> result = value1.div(value2);
+                    case MOD -> result = value1.mod(value2);
+                    case UNDEFINED -> {
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

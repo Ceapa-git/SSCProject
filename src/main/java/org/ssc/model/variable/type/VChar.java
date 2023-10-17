@@ -2,26 +2,14 @@ package org.ssc.model.variable.type;
 
 import org.ssc.model.Block;
 import org.ssc.model.TypeMismatchException;
+import org.ssc.model.math.InvalidOperation;
 import org.ssc.model.variable.Variable;
-
-import java.util.ArrayList;
 
 public class VChar extends Block implements Variable<Character> {
     private Character value;
-    private String name;
 
     public VChar() {
         this.value = ' ';
-    }
-
-    @Override
-    public String getName() {
-        return this.name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name=name;
     }
 
     @Override
@@ -40,6 +28,37 @@ public class VChar extends Block implements Variable<Character> {
     public void changeValue(Object value) throws TypeMismatchException{
         if(value instanceof Integer) this.value = (char) (this.value + ((Integer) value));
         else throw new TypeMismatchException();
+    }
+
+    @Override
+    public Variable<Character> add(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VChar result = new VChar();
+        result.value = (char) (this.value + ((VInt) value).getValue());
+        return null;
+    }
+
+    @Override
+    public Variable<Character> sub(Object value) throws TypeMismatchException, InvalidOperation {
+        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        VChar result = new VChar();
+        result.value = (char) (this.value - ((VInt) value).getValue());
+        return null;
+    }
+
+    @Override
+    public Variable<Character> mul(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
+    }
+
+    @Override
+    public Variable<Character> div(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
+    }
+
+    @Override
+    public Variable<Character> mod(Object value) throws TypeMismatchException, InvalidOperation {
+        throw new InvalidOperation();
     }
 
     @Override
