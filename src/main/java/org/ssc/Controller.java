@@ -1,5 +1,11 @@
 package org.ssc;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import org.ssc.gui.MainController;
 import org.ssc.model.Block;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
@@ -11,15 +17,34 @@ import org.ssc.model.variable.type.VChar;
 import org.ssc.model.variable.type.VFloat;
 import org.ssc.model.variable.type.VInt;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Controller {
+public class Controller extends Application {
+    private static Scene scene;
     private static HashMap<String, Variable<?>> variables;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        scene = new Scene(loadFXML("main"));
+        stage.setMaximized(true);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void setRoot(String fxml) throws IOException {
+        scene.setRoot(loadFXML(fxml));
+    }
+
+    private static Parent loadFXML(String fxml) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainController.class.getResource(fxml + ".fxml"));
+        return fxmlLoader.load();
+    }
 
     public static void main(String[] args) {
         variables = new HashMap<>();
-        //new View();
+        launch();
         Block start = new Block();
         Block current = start;
 
@@ -150,23 +175,26 @@ public class Controller {
         Block current = start;
         while(current != null){
             switch (current.getBlockName()) {
-                case "SetVariable" -> {
+                case "SetVariable" : {
                     SetVariable block = (SetVariable) current;
                     String name = block.getName();
                     Variable<?> value = compute(block.getConnection(0));
                     if (!variables.containsKey(name)) variables.put(name, value);
                     else variables.get(name).setValue(value.getValue());
+                    break;
                 }
-                case "PrintVariable" -> {
+                case "PrintVariable" : {
                     PrintVariable block = (PrintVariable) current;
                     String name = block.getName();
                     System.out.println(variables.get(name).getPrint());
+                    break;
                 }
-                case "ChangeVariable" -> {
+                case "ChangeVariable" : {
                     ChangeVariable block = (ChangeVariable) current;
                     String name = block.getName();
                     Variable<?> value = compute(block.getConnection(0));
                     if (variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
+                    break;
                 }
             }
             current= current.getNext();
@@ -183,16 +211,34 @@ public class Controller {
         else value2 = (Variable<?>) current.getConnection(1);
 
         switch (current.getBlockName()){
-            case "Operator" ->{
+            case "Operator" : {
                 switch (((Operator) current).getOperation()){
-                    case ADD -> result = value1.add(value2);
-                    case SUB -> result = value1.sub(value2);
-                    case MUL -> result = value1.mul(value2);
-                    case DIV -> result = value1.div(value2);
-                    case MOD -> result = value1.mod(value2);
-                    case UNDEFINED -> {
+                    case ADD : {
+                        result = value1.add(value2);
+                        break;
+                    }
+                    case SUB : {
+                        result = value1.sub(value2);
+                        break;
+                    }
+                    case MUL : {
+                        result = value1.mul(value2);
+                        break;
+                    }
+                    case DIV : {
+                        result = value1.div(value2);
+                        break;
+                    }
+                    case MOD : {
+                        result = value1.mod(value2);
+                        break;
+                    }
+                    case UNDEFINED : {
                     }
                 }
+            }
+            default: {
+                break;
             }
         }
         return result;
