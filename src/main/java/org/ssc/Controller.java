@@ -1,11 +1,6 @@
 package org.ssc;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import org.ssc.gui.MainController;
+import org.ssc.gui.MainWindow;
 import org.ssc.model.Block;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
@@ -17,35 +12,23 @@ import org.ssc.model.variable.type.VChar;
 import org.ssc.model.variable.type.VFloat;
 import org.ssc.model.variable.type.VInt;
 
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Controller extends Application {
-    private static Scene scene;
+public class Controller {
     private static HashMap<String, Variable<?>> variables;
-
-    @Override
-    public void start(Stage stage) throws Exception {
-        scene = new Scene(loadFXML("main"));
-        stage.setMaximized(true);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(MainController.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
 
     public static void main(String[] args) {
         variables = new HashMap<>();
-        launch();
+        MainWindow mainWindow = new MainWindow();
         Block start = new Block();
+
+        mainWindow.addRunActionListener(e -> {
+            run(start);
+        });
+
         Block current = start;
 
         VInt amount1 = new VInt();
@@ -166,9 +149,6 @@ public class Controller extends Application {
 
         current.setNext(new PrintVariable("a"));
         current=current.getNext();
-
-        run(start);
-
     }
 
     private static void run(Block start){
@@ -202,13 +182,13 @@ public class Controller extends Application {
     }
     private static Variable<?> compute(Block current) {
         if(current instanceof Variable<?>) return (Variable<?>) current;
-        Variable<?> value1,value2;
+        Variable<?> value1,value2;//todo considerat daca nu trebuie in switch la operator
         Variable<?> result = new VInt();
 
         if(!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
         else value1 = (Variable<?>) current.getConnection(0);
         if(!(current.getConnection(1) instanceof Variable<?>)) value2 = compute(current.getConnection(1));
-        else value2 = (Variable<?>) current.getConnection(1);
+        else value2 = (Variable<?>) current.getConnection(1);//pana aici todoul
 
         switch (current.getBlockName()){
             case "Operator" : {
