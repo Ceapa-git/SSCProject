@@ -12,7 +12,7 @@ public class Block {
         this.previous = null;
         this.next = null;
         this.connections = new ArrayList<>();
-        this.blockName = "empty";
+        this.blockName = "Start";
     }
 
     public Block(Block previous, Block next) {

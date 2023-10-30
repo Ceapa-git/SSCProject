@@ -10,6 +10,7 @@ public class VInt extends Block implements Variable<Integer> {
 
     public VInt() {
         this.value = 0;
+        this.blockName = "Variable";
     }
 
     @Override

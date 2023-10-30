@@ -10,6 +10,7 @@ public class VFloat extends Block implements Variable<Float> {
 
     public VFloat() {
         this.value = 0.f;
+        this.blockName = "Variable";
     }
 
     @Override

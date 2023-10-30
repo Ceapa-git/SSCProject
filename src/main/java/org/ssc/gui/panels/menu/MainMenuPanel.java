@@ -1,10 +1,10 @@
-package org.ssc.gui.panels;
+package org.ssc.gui.panels.menu;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-public class BlockPanel extends JPanel {
+public class MainMenuPanel extends JPanel {
     private final JPanel blockCategoryPanel;
     private final JPanel cardPanel;
     private final CardLayout cardLayout;
@@ -13,7 +13,7 @@ public class BlockPanel extends JPanel {
     private final JButton operation;
     private final JButton variable;
     private final JButton close;
-    public BlockPanel(){
+    public MainMenuPanel(){
         setBackground(Color.WHITE);
         SpringLayout layout = new SpringLayout();
         setLayout(layout);
@@ -89,5 +89,13 @@ public class BlockPanel extends JPanel {
     public void showClose(){
         int width = blockCategoryPanel.getPreferredSize().width;
         setPreferredSize(new Dimension(width,getPreferredSize().height));
+    }
+
+    public VariablePanel getVariablePanel() {
+        return variablePanel;
+    }
+
+    public OperationPanel getOperationPanel() {
+        return operationPanel;
     }
 }

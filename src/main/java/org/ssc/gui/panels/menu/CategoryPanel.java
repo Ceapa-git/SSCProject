@@ -1,4 +1,4 @@
-package org.ssc.gui.panels;
+package org.ssc.gui.panels.menu;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,21 +28,23 @@ public class CategoryPanel extends JPanel {
         setPreferredSize(new Dimension(200,0));
     }
 
-    protected void addButton(String name, ActionListener listener){
+    protected void addButton(String name){
         JButton button = new JButton(name);
-        button.addActionListener(listener);
         buttons.put(name,button);
         innerPanel.add(button);
         layout.putConstraint(SpringLayout.SOUTH,innerPanel,innerPanel.getPreferredSize().height,SpringLayout.NORTH,this);
         revalidate();
         repaint();
     }
+    public void addButtonActionListener(String name, ActionListener listener){
+        buttons.get(name).addActionListener(listener);
+    }
 
-    protected JButton getButton(String name){
+    public JButton getButton(String name){
         return buttons.get(name);
     }
 
-    protected void clearButtons(){
+    public void clearButtons(){
         for(String k : buttons.keySet()){
             innerPanel.remove(buttons.get(k));
         }

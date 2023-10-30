@@ -1,6 +1,7 @@
 package org.ssc;
 
 import org.ssc.gui.MainWindow;
+import org.ssc.gui.panels.canvas.MainCanvasPanel;
 import org.ssc.model.Block;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
@@ -24,11 +25,16 @@ public class Controller {
         variables = new HashMap<>();
         MainWindow mainWindow = new MainWindow();
         Block start = new Block();
+        generateExample(start);
+        mainWindow.addBlock(start);
 
         mainWindow.addRunActionListener(e -> {
             run(start);
         });
 
+    }
+
+    private static void generateExample(Block start) {
         Block current = start;
 
         VInt amount1 = new VInt();
@@ -148,7 +154,6 @@ public class Controller {
         current.getConnection(0).setConnection(int2,1);
 
         current.setNext(new PrintVariable("a"));
-        current=current.getNext();
     }
 
     private static void run(Block start){

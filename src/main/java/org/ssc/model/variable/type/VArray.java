@@ -14,11 +14,13 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     public VArray() {
         this.isChar=false;
         this.value = new ArrayList<>();
+        this.blockName = "Variable";
     }
 
     public VArray(boolean isChar) {
         this.isChar=isChar;
         this.value = new ArrayList<>();
+        this.blockName = "Variable";
     }
 
     @Override

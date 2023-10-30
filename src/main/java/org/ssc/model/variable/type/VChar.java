@@ -10,6 +10,7 @@ public class VChar extends Block implements Variable<Character> {
 
     public VChar() {
         this.value = ' ';
+        this.blockName = "Variable";
     }
 
     @Override
