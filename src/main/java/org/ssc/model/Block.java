@@ -1,5 +1,7 @@
 package org.ssc.model;
 
+import org.ssc.gui.BlockPanel;
+
 import java.util.ArrayList;
 
 public class Block {
@@ -7,6 +9,7 @@ public class Block {
     protected Block next;
     protected ArrayList<Block> connections;
     protected String blockName;
+    protected BlockPanel blockPanel;
 
     public Block() {
         this.previous = null;
@@ -21,6 +24,18 @@ public class Block {
         this.connections = new ArrayList<>();
         this.blockName = "empty";
     }
+
+    public void setBlockName(String blockName) {
+        this.blockName = blockName;
+    }
+
+    public void setBlockPanel(BlockPanel blockPanel){
+        this.blockPanel=blockPanel;
+    }
+    public BlockPanel getBlockPanel() {
+        return blockPanel;
+    }
+
     public String getBlockName(){
         return this.blockName;
     }
@@ -42,12 +57,12 @@ public class Block {
     }
     public boolean removeConnection(Block connection){
         if(!this.connections.contains(connection)) return false;
-        this.connections.remove(connection);
+        this.connections.set(this.connections.indexOf(connection), null);
         return true;
     }
     public boolean removeConnection(int id){
         if(id<0 || id>this.connections.size() || this.connections.get(id) == null) return false;
-        this.connections.remove(id);
+        this.connections.set(id, null);
         return true;
     }
     public int addConnection(Block connection){
@@ -70,5 +85,9 @@ public class Block {
         if(index>=this.connections.size() || index<0)
             return null;
         return this.connections.get(index);
+    }
+
+    public Block[] getConnections() {
+        return this.connections.toArray(new Block[connections.size()]);
     }
 }

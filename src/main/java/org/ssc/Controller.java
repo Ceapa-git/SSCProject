@@ -1,7 +1,6 @@
 package org.ssc;
 
 import org.ssc.gui.MainWindow;
-import org.ssc.gui.panels.canvas.MainCanvasPanel;
 import org.ssc.model.Block;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
@@ -13,8 +12,6 @@ import org.ssc.model.variable.type.VChar;
 import org.ssc.model.variable.type.VFloat;
 import org.ssc.model.variable.type.VInt;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -25,13 +22,9 @@ public class Controller {
         variables = new HashMap<>();
         MainWindow mainWindow = new MainWindow();
         Block start = new Block();
-        generateExample(start);
-        mainWindow.addBlock(start);
-
-        mainWindow.addRunActionListener(e -> {
-            run(start);
-        });
-
+        //generateExample(start);
+        mainWindow.addRunActionListener(e -> run(start, mainWindow));
+        mainWindow.addBlocks(start);
     }
 
     private static void generateExample(Block start) {
@@ -156,39 +149,51 @@ public class Controller {
         current.setNext(new PrintVariable("a"));
     }
 
-    private static void run(Block start){
+    private static void run(Block start, MainWindow mainWindow){
         Block current = start;
-        while(current != null){
-            switch (current.getBlockName()) {
-                case "SetVariable" : {
-                    SetVariable block = (SetVariable) current;
-                    String name = block.getName();
-                    Variable<?> value = compute(block.getConnection(0));
-                    if (!variables.containsKey(name)) variables.put(name, value);
-                    else variables.get(name).setValue(value.getValue());
-                    break;
+        mainWindow.addTextNL("Running");
+        try {
+            while (current != null) {
+                switch (current.getBlockName()) {
+                    case "SetVariable": {
+                        SetVariable block = (SetVariable) current;
+                        String name = block.getName();
+                        Variable<?> value = compute(block.getConnection(0));
+                        if (!variables.containsKey(name)) variables.put(name, value);
+                        else variables.get(name).setValue(value.getValue());
+                        break;
+                    }
+                    case "PrintVariable": {
+                        PrintVariable block = (PrintVariable) current;
+                        String name = block.getName();
+                        mainWindow.addTextNL(variables.get(name).getPrint());
+                        break;
+                    }
+                    case "ChangeVariable": {
+                        ChangeVariable block = (ChangeVariable) current;
+                        String name = block.getName();
+                        Variable<?> value = compute(block.getConnection(0));
+                        if (variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
+                        break;
+                    }
                 }
-                case "PrintVariable" : {
-                    PrintVariable block = (PrintVariable) current;
-                    String name = block.getName();
-                    System.out.println(variables.get(name).getPrint());
-                    break;
-                }
-                case "ChangeVariable" : {
-                    ChangeVariable block = (ChangeVariable) current;
-                    String name = block.getName();
-                    Variable<?> value = compute(block.getConnection(0));
-                    if (variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
-                    break;
-                }
+                current = current.getNext();
             }
-            current= current.getNext();
         }
+        catch (Exception e){
+            mainWindow.addTextNL(e.getLocalizedMessage());
+            mainWindow.addTextNL("Finished Unsuccessfully");
+            return;
+        }
+        mainWindow.addTextNL("Finished Successfully");
     }
-    private static Variable<?> compute(Block current) {
+    private static Variable<?> compute(Block current) throws Exception {
         if(current instanceof Variable<?>) return (Variable<?>) current;
         Variable<?> value1,value2;//todo considerat daca nu trebuie in switch la operator
         Variable<?> result = new VInt();
+
+        if(current.getConnection(0) == null) throw new Exception("No connections");
+        if(current.getConnection(1) == null) throw new Exception("Not enough connections");
 
         if(!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
         else value1 = (Variable<?>) current.getConnection(0);

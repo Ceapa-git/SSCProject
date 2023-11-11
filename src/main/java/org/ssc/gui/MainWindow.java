@@ -8,7 +8,6 @@ import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
 import org.ssc.model.variable.SetVariable;
-import org.ssc.model.variable.Variable;
 import org.ssc.model.variable.type.VArray;
 import org.ssc.model.variable.type.VChar;
 import org.ssc.model.variable.type.VFloat;
@@ -76,29 +75,26 @@ public class MainWindow extends JFrame {
     private MainMenuPanel getMainMenuPanel() {
         MainMenuPanel blockPanel = new MainMenuPanel();
         blockPanel.addOperationActionListener(e -> {
-            mainConsolePanel.addTextNL("operation");
             blockPanel.showOperation();
             categoryUpdate(blockPanel);
         });
-        blockPanel.getOperationPanel().addButtonActionListener("+",e-> addBlock(new Operator(Operator.Operation.ADD)));
-        blockPanel.getOperationPanel().addButtonActionListener("-",e-> addBlock(new Operator(Operator.Operation.SUB)));
-        blockPanel.getOperationPanel().addButtonActionListener("*",e-> addBlock(new Operator(Operator.Operation.MUL)));
-        blockPanel.getOperationPanel().addButtonActionListener("/",e-> addBlock(new Operator(Operator.Operation.DIV)));
-        blockPanel.getOperationPanel().addButtonActionListener("%",e-> addBlock(new Operator(Operator.Operation.MOD)));
+        blockPanel.getOperationPanel().addButtonActionListener("+",e-> addBlocks(new Operator(Operator.Operation.ADD)));
+        blockPanel.getOperationPanel().addButtonActionListener("-",e-> addBlocks(new Operator(Operator.Operation.SUB)));
+        blockPanel.getOperationPanel().addButtonActionListener("*",e-> addBlocks(new Operator(Operator.Operation.MUL)));
+        blockPanel.getOperationPanel().addButtonActionListener("/",e-> addBlocks(new Operator(Operator.Operation.DIV)));
+        blockPanel.getOperationPanel().addButtonActionListener("%",e-> addBlocks(new Operator(Operator.Operation.MOD)));
         blockPanel.addVariableActionListener(e -> {
-            mainConsolePanel.addTextNL("variable");
             blockPanel.showVariable();
             categoryUpdate(blockPanel);
         });
-        blockPanel.getVariablePanel().addButtonActionListener("Int",e-> addBlock(new VInt()));
-        blockPanel.getVariablePanel().addButtonActionListener("Float",e-> addBlock(new VFloat()));
-        blockPanel.getVariablePanel().addButtonActionListener("Char",e-> addBlock(new VChar()));
-        blockPanel.getVariablePanel().addButtonActionListener("Array",e-> addBlock(new VArray<>()));
-        blockPanel.getVariablePanel().addButtonActionListener("Set",e-> addBlock(new SetVariable()));
-        blockPanel.getVariablePanel().addButtonActionListener("Change",e-> addBlock(new ChangeVariable()));
-        blockPanel.getVariablePanel().addButtonActionListener("Print",e-> addBlock(new PrintVariable()));
+        blockPanel.getVariablePanel().addButtonActionListener("Int",e-> addBlocks(new VInt()));
+        blockPanel.getVariablePanel().addButtonActionListener("Float",e-> addBlocks(new VFloat()));
+        blockPanel.getVariablePanel().addButtonActionListener("Char",e-> addBlocks(new VChar()));
+        blockPanel.getVariablePanel().addButtonActionListener("Array",e-> addBlocks(new VArray<>()));
+        blockPanel.getVariablePanel().addButtonActionListener("Set",e-> addBlocks(new SetVariable()));
+        blockPanel.getVariablePanel().addButtonActionListener("Change",e-> addBlocks(new ChangeVariable()));
+        blockPanel.getVariablePanel().addButtonActionListener("Print",e-> addBlocks(new PrintVariable()));
         blockPanel.addCloseActionListener(e -> {
-            mainConsolePanel.addTextNL("close");
             blockPanel.showClose();
             categoryUpdate(blockPanel);
         });
@@ -116,9 +112,7 @@ public class MainWindow extends JFrame {
     }
 
     private void addBlockRecursive(Block block,int offsetX,int offsetY){
-        BlockPanel blockPanel = new BlockPanel(block);
-        blockPanel.setPosition(offsetX,offsetY);
-        mainCanvasPanel.addBlock(blockPanel);
+        addBlock(block, offsetX, offsetY);
         for(int i=0;i<block.getNumberOfConnections();i++){
             if(block.getConnection(i) != null)
                 addBlockRecursive(block.getConnection(i),offsetX+200,offsetY+i*200);
@@ -127,9 +121,23 @@ public class MainWindow extends JFrame {
             addBlockRecursive(block.getNext(),offsetX,offsetY+200);
         }
     }
-    public void addBlock(Block block) {
+
+    public void addBlock(Block block, int offsetX,int offsetY){
+        BlockPanel blockPanel = new BlockPanel(block);
+        blockPanel.setPosition(offsetX,offsetY);
+        mainCanvasPanel.addBlock(blockPanel);
+    }
+
+    public void addBlocks(Block block) {
         addBlockRecursive(block,0,0);
         mainCanvasPanel.revalidate();
         mainCanvasPanel.repaint();
+    }
+
+    public void addText(String text){
+        mainConsolePanel.addText(text);
+    }
+    public void addTextNL(String text){
+        mainConsolePanel.addTextNL(text);
     }
 }

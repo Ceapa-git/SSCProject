@@ -1,0 +1,6 @@
+0 - 1 : out - in
+    V out
+    V in
+2 - 3 : out - in
+    < <
+    out in
