@@ -7,13 +7,13 @@ public class PrintVariable extends Block {
 
     public PrintVariable() {
         this.blockName = "PrintVariable";
-        this.name= null;
+        this.name = null;
         this.addConnection(null);
     }
 
     public PrintVariable(String name) {
         this();
-        this.name= name;
+        this.name = name;
     }
 
     public String getName() {

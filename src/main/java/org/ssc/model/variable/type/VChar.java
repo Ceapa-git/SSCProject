@@ -19,21 +19,21 @@ public class VChar extends Block implements Variable<Character> {
     }
 
     @Override
-    public void setValue(Object value) throws TypeMismatchException{
-        if(value instanceof Character) this.value = (Character) value;
-        else if(value instanceof Integer) this.value = (char)(int)(Integer) value;
+    public void setValue(Object value) throws TypeMismatchException {
+        if (value instanceof Character) this.value = (Character) value;
+        else if (value instanceof Integer) this.value = (char) (int) (Integer) value;
         else throw new TypeMismatchException();
     }
 
     @Override
-    public void changeValue(Object value) throws TypeMismatchException{
-        if(value instanceof Integer) this.value = (char) (this.value + ((Integer) value));
+    public void changeValue(Object value) throws TypeMismatchException {
+        if (value instanceof Integer) this.value = (char) (this.value + ((Integer) value));
         else throw new TypeMismatchException();
     }
 
     @Override
     public Variable<Character> add(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VChar result = new VChar();
         result.value = (char) (this.value + ((VInt) value).getValue());
         return null;
@@ -41,7 +41,7 @@ public class VChar extends Block implements Variable<Character> {
 
     @Override
     public Variable<Character> sub(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VChar result = new VChar();
         result.value = (char) (this.value - ((VInt) value).getValue());
         return null;

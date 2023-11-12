@@ -20,56 +20,56 @@ public class VFloat extends Block implements Variable<Float> {
 
     @Override
     public void setValue(Object value) throws TypeMismatchException {
-        if(value instanceof Float) this.value = (Float) value;
-        else if(value instanceof Double) this.value = ((Double) value).floatValue();
-        else if(value instanceof Integer) this.value = ((Integer) value).floatValue();
+        if (value instanceof Float) this.value = (Float) value;
+        else if (value instanceof Double) this.value = ((Double) value).floatValue();
+        else if (value instanceof Integer) this.value = ((Integer) value).floatValue();
         else throw new TypeMismatchException();
     }
 
     @Override
     public void changeValue(Object value) throws TypeMismatchException {
-        if(value instanceof Float) this.value += (Float) value;
-        else if(value instanceof Double) this.value += ((Double) value).floatValue();
-        else if(value instanceof Integer) this.value += ((Integer) value).floatValue();
+        if (value instanceof Float) this.value += (Float) value;
+        else if (value instanceof Double) this.value += ((Double) value).floatValue();
+        else if (value instanceof Integer) this.value += ((Integer) value).floatValue();
         else throw new TypeMismatchException();
     }
 
     @Override
     public Variable<Float> add(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
         VFloat result = new VFloat();
         result.value = this.value;
-        if(value instanceof VFloat) result.value += ((VFloat) value).getValue();
+        if (value instanceof VFloat) result.value += ((VFloat) value).getValue();
         else result.value += ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Float> sub(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
         VFloat result = new VFloat();
         result.value = this.value;
-        if(value instanceof VFloat) result.value -= ((VFloat) value).getValue();
+        if (value instanceof VFloat) result.value -= ((VFloat) value).getValue();
         else result.value -= ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Float> mul(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
         VFloat result = new VFloat();
         result.value = this.value;
-        if(value instanceof VFloat) result.value *= ((VFloat) value).getValue();
+        if (value instanceof VFloat) result.value *= ((VFloat) value).getValue();
         else result.value *= ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Float> div(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VFloat) && !(value instanceof VInt)) throw new TypeMismatchException();
         VFloat result = new VFloat();
         result.value = this.value;
-        if(value instanceof VFloat) result.value /= ((VFloat) value).getValue();
+        if (value instanceof VFloat) result.value /= ((VFloat) value).getValue();
         else result.value /= ((VInt) value).getValue();
         return result;
     }

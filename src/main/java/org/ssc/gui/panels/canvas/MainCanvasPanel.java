@@ -11,7 +11,8 @@ import java.awt.event.MouseEvent;
 
 public class MainCanvasPanel extends JPanel {
     private Point offset;
-    public MainCanvasPanel(){
+
+    public MainCanvasPanel() {
         setLayout(null);
         setBackground(Color.black);
 
@@ -38,8 +39,8 @@ public class MainCanvasPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                for(Component component: getComponents()){
-                    if(component instanceof BlockPanel image){
+                for (Component component : getComponents()) {
+                    if (component instanceof BlockPanel image) {
                         image.rescale(getHeight());
                     }
                 }

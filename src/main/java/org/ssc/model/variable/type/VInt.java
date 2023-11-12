@@ -20,58 +20,58 @@ public class VInt extends Block implements Variable<Integer> {
 
     @Override
     public void setValue(Object value) throws TypeMismatchException {
-        if(value instanceof Integer) this.value = (Integer) value;
+        if (value instanceof Integer) this.value = (Integer) value;
         else throw new TypeMismatchException();
     }
 
     @Override
     public void changeValue(Object value) throws TypeMismatchException {
-        if(value instanceof Integer) this.value += (Integer) value;
+        if (value instanceof Integer) this.value += (Integer) value;
         else throw new TypeMismatchException();
     }
 
     @Override
     public Variable<Integer> add(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VInt result = new VInt();
         result.value = this.value;
-        result.value += ((VInt)value).getValue();
+        result.value += ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Integer> sub(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VInt result = new VInt();
         result.value = this.value;
-        result.value -= ((VInt)value).getValue();
+        result.value -= ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Integer> mul(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VInt result = new VInt();
         result.value = this.value;
-        result.value *= ((VInt)value).getValue();
+        result.value *= ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Integer> div(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VInt result = new VInt();
         result.value = this.value;
-        result.value /= ((VInt)value).getValue();
+        result.value /= ((VInt) value).getValue();
         return result;
     }
 
     @Override
     public Variable<Integer> mod(Object value) throws TypeMismatchException, InvalidOperation {
-        if(!(value instanceof VInt)) throw new TypeMismatchException();
+        if (!(value instanceof VInt)) throw new TypeMismatchException();
         VInt result = new VInt();
         result.value = this.value;
-        result.value %= ((VInt)value).getValue();
+        result.value %= ((VInt) value).getValue();
         return result;
     }
 

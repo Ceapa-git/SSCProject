@@ -29,14 +29,15 @@ public class Block {
         this.blockName = blockName;
     }
 
-    public void setBlockPanel(BlockPanel blockPanel){
-        this.blockPanel=blockPanel;
+    public void setBlockPanel(BlockPanel blockPanel) {
+        this.blockPanel = blockPanel;
     }
+
     public BlockPanel getBlockPanel() {
         return blockPanel;
     }
 
-    public String getBlockName(){
+    public String getBlockName() {
         return this.blockName;
     }
 
@@ -55,34 +56,41 @@ public class Block {
     public void setNext(Block next) {
         this.next = next;
     }
-    public boolean removeConnection(Block connection){
-        if(!this.connections.contains(connection)) return false;
+
+    public boolean removeConnection(Block connection) {
+        if (!this.connections.contains(connection)) return false;
         this.connections.set(this.connections.indexOf(connection), null);
         return true;
     }
-    public boolean removeConnection(int id){
-        if(id<0 || id>this.connections.size() || this.connections.get(id) == null) return false;
+
+    public boolean removeConnection(int id) {
+        if (id < 0 || id > this.connections.size() || this.connections.get(id) == null) return false;
         this.connections.set(id, null);
         return true;
     }
-    public int addConnection(Block connection){
+
+    public int addConnection(Block connection) {
         this.connections.add(connection);
         return this.connections.indexOf(connection);
     }
-    public boolean setConnection(Block connection){
-        return setConnection(connection,0);
+
+    public boolean setConnection(Block connection) {
+        return setConnection(connection, 0);
     }
-    public boolean setConnection(Block connection,int id){
-        if(id<0 || id>this.connections.size()) return false;
-        this.connections.set(id,connection);
+
+    public boolean setConnection(Block connection, int id) {
+        if (id < 0 || id > this.connections.size()) return false;
+        this.connections.set(id, connection);
         this.connections.get(this.connections.indexOf(connection)).setPrevious(this);
         return true;
     }
-    public int getNumberOfConnections(){
+
+    public int getNumberOfConnections() {
         return this.connections.size();
     }
-    public Block getConnection(int index){
-        if(index>=this.connections.size() || index<0)
+
+    public Block getConnection(int index) {
+        if (index >= this.connections.size() || index < 0)
             return null;
         return this.connections.get(index);
     }

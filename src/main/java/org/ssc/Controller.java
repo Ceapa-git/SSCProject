@@ -38,25 +38,25 @@ public class Controller {
         amount3.setValue(20);
 
         current.setNext(new SetVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(amount1);
 
         current.setNext(new PrintVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
 
         current.setNext(new SetVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(amount2);
 
         current.setNext(new PrintVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
 
         current.setNext(new ChangeVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(amount3);
 
         current.setNext(new PrintVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
 
         //----------------------------------------------------
 
@@ -66,18 +66,18 @@ public class Controller {
         floatAmount2.setValue(5.678);
 
         current.setNext(new SetVariable("b"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(floatAmount1);
 
         current.setNext(new PrintVariable("b"));
-        current=current.getNext();
+        current = current.getNext();
 
         current.setNext(new ChangeVariable("b"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(floatAmount2);
 
         current.setNext(new PrintVariable("b"));
-        current=current.getNext();
+        current = current.getNext();
 
         //----------------------------------------------------
 
@@ -87,18 +87,18 @@ public class Controller {
         charAmount.setValue(1);
 
         current.setNext(new SetVariable("c"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(c);
 
         current.setNext(new PrintVariable("c"));
-        current=current.getNext();
+        current = current.getNext();
 
         current.setNext(new ChangeVariable("c"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(charAmount);
 
         current.setNext(new PrintVariable("c"));
-        current=current.getNext();
+        current = current.getNext();
 
         //----------------------------------------------------
 
@@ -109,11 +109,11 @@ public class Controller {
         string.getValue().add(c);
 
         current.setNext(new SetVariable("d"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(string);
 
         current.setNext(new PrintVariable("d"));
-        current=current.getNext();
+        current = current.getNext();
 
         //----------------------------------------------------
 
@@ -124,11 +124,11 @@ public class Controller {
         intArray.getValue().add(amount3);
 
         current.setNext(new SetVariable("e"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(intArray);
 
         current.setNext(new PrintVariable("e"));
-        current=current.getNext();
+        current = current.getNext();
 
         //----------------------------------------------------
 
@@ -138,18 +138,18 @@ public class Controller {
         int2.setValue(21);
 
         current.setNext(new PrintVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
 
         current.setNext(new SetVariable("a"));
-        current=current.getNext();
+        current = current.getNext();
         current.setConnection(new Operator(Operator.Operation.MUL));
-        current.getConnection(0).setConnection(int1,0);
-        current.getConnection(0).setConnection(int2,1);
+        current.getConnection(0).setConnection(int1, 0);
+        current.getConnection(0).setConnection(int2, 1);
 
         current.setNext(new PrintVariable("a"));
     }
 
-    private static void run(Block start, MainWindow mainWindow){
+    private static void run(Block start, MainWindow mainWindow) {
         Block current = start;
         mainWindow.addTextNL("Running");
         try {
@@ -179,51 +179,51 @@ public class Controller {
                 }
                 current = current.getNext();
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             mainWindow.addTextNL(e.getLocalizedMessage());
             mainWindow.addTextNL("Finished Unsuccessfully");
             return;
         }
         mainWindow.addTextNL("Finished Successfully");
     }
+
     private static Variable<?> compute(Block current) throws Exception {
-        if(current instanceof Variable<?>) return (Variable<?>) current;
-        Variable<?> value1,value2;//todo considerat daca nu trebuie in switch la operator
+        if (current instanceof Variable<?>) return (Variable<?>) current;
+        Variable<?> value1, value2;//todo considerat daca nu trebuie in switch la operator
         Variable<?> result = new VInt();
 
-        if(current.getConnection(0) == null) throw new Exception("No connections");
-        if(current.getConnection(1) == null) throw new Exception("Not enough connections");
+        if (current.getConnection(0) == null) throw new Exception("No connections");
+        if (current.getConnection(1) == null) throw new Exception("Not enough connections");
 
-        if(!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
+        if (!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
         else value1 = (Variable<?>) current.getConnection(0);
-        if(!(current.getConnection(1) instanceof Variable<?>)) value2 = compute(current.getConnection(1));
+        if (!(current.getConnection(1) instanceof Variable<?>)) value2 = compute(current.getConnection(1));
         else value2 = (Variable<?>) current.getConnection(1);//pana aici todoul
 
-        switch (current.getBlockName()){
-            case "Operator" : {
-                switch (((Operator) current).getOperation()){
-                    case ADD : {
+        switch (current.getBlockName()) {
+            case "Operator": {
+                switch (((Operator) current).getOperation()) {
+                    case ADD: {
                         result = value1.add(value2);
                         break;
                     }
-                    case SUB : {
+                    case SUB: {
                         result = value1.sub(value2);
                         break;
                     }
-                    case MUL : {
+                    case MUL: {
                         result = value1.mul(value2);
                         break;
                     }
-                    case DIV : {
+                    case DIV: {
                         result = value1.div(value2);
                         break;
                     }
-                    case MOD : {
+                    case MOD: {
                         result = value1.mod(value2);
                         break;
                     }
-                    case UNDEFINED : {
+                    case UNDEFINED: {
                     }
                 }
             }

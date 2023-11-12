@@ -145,7 +145,7 @@ public class BlockPanel extends JPanel {
             g.drawImage(imageComponent.getImage(), (int) imageComponent.getPosition().getX(), (int) imageComponent.getPosition().getY(), imageComponent.getWidth(), imageComponent.getHeight(), this);
         }
         for (ImageComponent imageComponent : imageComponents) {
-            if(imageComponent.isText()){
+            if (imageComponent.isText()) {
                 g.drawImage(imageComponent.getText(), (int) imageComponent.getPosition().getX() + imageComponent.getTextOffset(), 0, this);
             }
         }

@@ -12,13 +12,13 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     private final boolean isChar;
 
     public VArray() {
-        this.isChar=false;
+        this.isChar = false;
         this.value = new ArrayList<>();
         this.blockName = "Variable";
     }
 
     public VArray(boolean isChar) {
-        this.isChar=isChar;
+        this.isChar = isChar;
         this.value = new ArrayList<>();
         this.blockName = "Variable";
     }
@@ -30,7 +30,7 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
 
     @Override
     public void setValue(Object value) throws TypeMismatchException {
-        if(this.value.getClass().isInstance(value)) this.value = (ArrayList<T>) value;
+        if (this.value.getClass().isInstance(value)) this.value = (ArrayList<T>) value;
         else throw new TypeMismatchException();
     }
 
@@ -66,19 +66,19 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
 
     @Override
     public String getPrint() {
-        if(value.size()==0) {
+        if (value.size() == 0) {
             if (isChar) return "";
             else return "[]";
         }
         StringBuilder msgBuilder;
-        if(isChar) msgBuilder = new StringBuilder();
-        else  msgBuilder = new StringBuilder("[");
+        if (isChar) msgBuilder = new StringBuilder();
+        else msgBuilder = new StringBuilder("[");
 
-        for(Variable<?> element:value) {
+        for (Variable<?> element : value) {
             msgBuilder.append(element.getPrint());
-            if(!isChar) msgBuilder.append(", ");
+            if (!isChar) msgBuilder.append(", ");
         }
-        if(!isChar) msgBuilder.delete(msgBuilder.length()-2,msgBuilder.length()).append("]");
+        if (!isChar) msgBuilder.delete(msgBuilder.length() - 2, msgBuilder.length()).append("]");
         return msgBuilder.toString();
     }
 
