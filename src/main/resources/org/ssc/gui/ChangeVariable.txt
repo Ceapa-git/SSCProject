@@ -1,0 +1,17 @@
+4
+ChangeVariable.png 0 200 450 100 0 0 450 100
+0
+1 200 :Change
+ChangeVariable.png 325 200 50 100 450 0
+1 2
+2 0 :x
+ChangeVariable.png 375 200 125 100 500 0
+0
+1 0 :to
+ChangeVariable.png 50 300 100 50 50 100
+0
+0
+3
+0 3 50 25 -50 0
+1 0 100 25 0 100
+2 2 100 50 75 0 0

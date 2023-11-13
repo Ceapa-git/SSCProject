@@ -1,0 +1,13 @@
+3
+PrintVariable.png 0 200 400 100 0 0 400 100
+0
+1 200 :Print
+PrintVariable.png 400 200 50 100 400 0
+1
+2 0 :x
+PrintVariable.png 50 300 100 50 50 100
+0
+0
+2
+0 2 50 25 -50 0
+1 0 100 25 0 100

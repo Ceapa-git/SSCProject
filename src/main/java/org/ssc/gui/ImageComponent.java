@@ -3,13 +3,14 @@ package org.ssc.gui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import static java.lang.Math.max;
 
 public class ImageComponent {
     private final Image originalImage;
@@ -29,14 +30,15 @@ public class ImageComponent {
     private double ratio = 1;
     private Point snapLocation = null;
     private int snapIndex = -1;
-    private final boolean hasText;
+    private final int hasText;
     private int textOffset = -1;
     private String text;
-    private final Image originalTextImage;
+    private Image originalTextImage;
     private Image textImage;
     private static final Font originalFont;
     private static final int fontSize = 70;
     private static final int charWidth;
+    private final BlockPanel blockPanel;
 
     static {
         try {
@@ -55,12 +57,13 @@ public class ImageComponent {
         }
     }
 
-    public ImageComponent(String line, String stretchable, String text) {
-        this(line, stretchable, text, false);
+    public ImageComponent(BlockPanel blockPanel, String line, String stretchable, String text) {
+        this(blockPanel, line, stretchable, text, false);
     }
 
-    public ImageComponent(String line, String stretchable, String text, boolean draggable) {
+    public ImageComponent(BlockPanel blockPanel, String line, String stretchable, String text, boolean draggable) {
         this.draggable = draggable;
+        this.blockPanel = blockPanel;
         try {
             String[] tokens = line.split("\\s+");
             URL url = this.getClass().getResource(tokens[0]);
@@ -110,15 +113,18 @@ public class ImageComponent {
             }
 
             tokens = text.split("\\s+");
-            this.hasText = Integer.parseInt(tokens[0]) == 1;
-            if (this.hasText) {
+            this.hasText = Integer.parseInt(tokens[0]);
+            if (this.hasText != 0) {
                 this.textOffset = Integer.parseInt(tokens[1]);
-                this.text = text.split(":")[1];
-                int height = 100;
+                if(blockPanel.getBlockName().equals("Variable"))
+                    this.text = blockPanel.getBlockStringValue();
+                else
+                    this.text = text.split(":")[1];
+                int height = originalImage.getHeight(null);
                 BufferedImage bufferedTextImage = new BufferedImage(this.text.length() * charWidth, height, BufferedImage.TYPE_INT_ARGB);
                 g2d = bufferedTextImage.createGraphics();
                 g2d.setFont(originalFont);
-                g2d.setColor(Color.red);
+                g2d.setColor(Color.black);
                 FontMetrics fontMetrics = g2d.getFontMetrics();
                 int ascent = fontMetrics.getAscent();
                 int descent = fontMetrics.getDescent();
@@ -207,9 +213,9 @@ public class ImageComponent {
         position.x = (int) (position.x * ratio);
         position.y = (int) (position.y * ratio);
 
-        if (hasText) redrawText(ratio);
-
         this.ratio = ratio;
+
+        if (hasText != 0) redrawText();
     }
 
     public void stretch(int x, int y) {
@@ -240,7 +246,7 @@ public class ImageComponent {
     public Point getSnapPoint() {
         if (this.snapType == -1) return null;
         Point point = new Point(snapPoint);
-        point.translate((int) (stretch.getX() + originalPosition.x), (int) (stretch.getY() + originalPosition.y));
+        point.translate((int) (stretch.getX() + movedPosition.x), (int) (stretch.getY() + movedPosition.y));
         return new Point((int) (point.x * ratio), (int) (point.y * ratio));
     }
 
@@ -251,7 +257,7 @@ public class ImageComponent {
     public Point getSnapLocation() {
         if (this.snapType == -1) return null;
         Point point = new Point(this.snapLocation);
-        point.translate((int) (stretch.getX() + originalPosition.x), (int) (stretch.getY() + originalPosition.y));
+        point.translate((int) (stretch.getX() + movedPosition.x), (int) (stretch.getY() + movedPosition.y));
         return new Point((int) (point.x * ratio), (int) (point.y * ratio));
     }
 
@@ -260,7 +266,7 @@ public class ImageComponent {
         return this.snapIndex;
     }
 
-    public boolean isText() {
+    public int isText() {
         return this.hasText;
     }
 
@@ -272,9 +278,34 @@ public class ImageComponent {
         return textImage;
     }
 
-    private void redrawText(double ratio) {
+    private void redrawText() {
         int newWidth = (int) (originalTextImage.getWidth(null) * ratio);
         int newHeight = (int) (100 * ratio);
         textImage = originalTextImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+    }
+
+    public void setTextString(String text){
+        if(hasText == 0) return;
+        this.text = text;
+        int height = originalImage.getHeight(null);
+        BufferedImage bufferedTextImage = new BufferedImage(max(this.text.length(), 1) * charWidth, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = bufferedTextImage.createGraphics();
+        g2d.setFont(originalFont);
+        g2d.setColor(Color.black);
+        FontMetrics fontMetrics = g2d.getFontMetrics();
+        int ascent = fontMetrics.getAscent();
+        int descent = fontMetrics.getDescent();
+        g2d.drawString(this.text, 0, (height - (ascent + descent)) / 2 + ascent);
+        g2d.setColor(Color.cyan);
+        g2d.drawRect(0, 0, this.text.length() * charWidth - 1, height - 1);
+        g2d.dispose();
+        originalTextImage = new ImageIcon(bufferedTextImage).getImage();
+        blockPanel.stretchImage(this, this.text.length() * charWidth, 0);
+        blockPanel.blockSetName(text);
+        redrawText();
+    }
+
+    public String getTextString(){
+        return text;
     }
 }

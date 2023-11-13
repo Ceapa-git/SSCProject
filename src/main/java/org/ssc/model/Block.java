@@ -98,4 +98,8 @@ public class Block {
     public Block[] getConnections() {
         return this.connections.toArray(new Block[connections.size()]);
     }
+
+    public void setName(String name) {}
+
+    public String getName() {return null;}
 }

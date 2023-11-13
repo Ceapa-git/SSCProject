@@ -15,6 +15,7 @@ public class MainMenuPanel extends JPanel {
     private final JButton close;
 
     public MainMenuPanel() {
+        setFocusable(false);
         setBackground(Color.WHITE);
         SpringLayout layout = new SpringLayout();
         setLayout(layout);
@@ -28,10 +29,13 @@ public class MainMenuPanel extends JPanel {
         blockCategoryInnerPanel.setLayout(new GridLayout(0, 1));
 
         operation = new JButton("Operation");
+        operation.setFocusable(false);
         blockCategoryInnerPanel.add(operation);
         variable = new JButton("Variable");
+        variable.setFocusable(false);
         blockCategoryInnerPanel.add(variable);
         close = new JButton("Close");
+        close.setFocusable(false);
         blockCategoryInnerPanel.add(close);
 
         blockCategoryPanel.add(blockCategoryInnerPanel);

@@ -8,6 +8,7 @@ public class MainConsolePanel extends JPanel {
     private String text;
 
     public MainConsolePanel() {
+        setFocusable(false);
         setBackground(Color.DARK_GRAY);
         SpringLayout layout = new SpringLayout();
         setLayout(layout);
@@ -26,6 +27,7 @@ public class MainConsolePanel extends JPanel {
         textArea.setWrapStyleWord(true);
         textArea.setFont(new Font("Arial", Font.PLAIN, 14));
         textArea.setEditable(false);
+        textArea.setFocusable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 

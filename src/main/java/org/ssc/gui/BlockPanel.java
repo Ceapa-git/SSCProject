@@ -1,18 +1,21 @@
 package org.ssc.gui;
 
+import org.ssc.gui.panels.canvas.MainCanvasPanel;
 import org.ssc.model.Block;
+import org.ssc.model.variable.Variable;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
+
+import static java.lang.Math.max;
 
 public class BlockPanel extends JPanel {
     private final Block block;
@@ -22,10 +25,13 @@ public class BlockPanel extends JPanel {
     private double oldRatio = 1;
     private final BlockPanel This = this;
     private boolean snapped;
-    private static final int snapRadius = 10;
+    private static final int snapRadius = 20;
     private int inType;
+    private final int setIndex;
+    private int snapIndex;
 
     public BlockPanel(Block block) {
+        setFocusable(false);
         setLayout(null);
         setOpaque(false);
         this.block = block;
@@ -35,10 +41,11 @@ public class BlockPanel extends JPanel {
             BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
             int n = Integer.parseInt(reader.readLine());
             imageComponents = new ArrayList<>(n);
-            imageComponents.add(new ImageComponent(reader.readLine(), reader.readLine(), reader.readLine(), true));
+            imageComponents.add(new ImageComponent(this, reader.readLine(), reader.readLine(), reader.readLine(), true));
             for (int i = 1; i < n; i++) {
-                imageComponents.add(new ImageComponent(reader.readLine(), reader.readLine(), reader.readLine()));
+                imageComponents.add(new ImageComponent(this, reader.readLine(), reader.readLine(), reader.readLine()));
             }
+            setIndex = getSetIndex();
             n = Integer.parseInt(reader.readLine());
             for (int i = 0; i < n; i++) {
                 var s = reader.readLine().split("\\s+");
@@ -62,12 +69,14 @@ public class BlockPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 moveOffset = e.getPoint();
                 getParent().setComponentZOrder(This, 0);
+                ((MainCanvasPanel)getParent()).setFocus(This);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
                 moveOffset = e.getPoint();
                 getParent().setComponentZOrder(This, 0);
+                ((MainCanvasPanel)getParent()).setFocus(This);
             }
         }, new MouseAdapter() {
             @Override
@@ -96,6 +105,7 @@ public class BlockPanel extends JPanel {
                                     }
                                     if (This.snapped) {
                                         Point point = outSnapLocations.get(i);
+                                        snapIndex = i;
                                         dx = (int) (point.getX() - getX());
                                         dy = (int) (point.getY() - getY());
                                         break;
@@ -117,6 +127,7 @@ public class BlockPanel extends JPanel {
                     This.block.setPrevious(null);
                     recursiveMove(dx, dy);
                 }
+                ((MainCanvasPanel)getParent()).setFocus(This);
                 revalidate();
                 repaint();
             }
@@ -145,7 +156,7 @@ public class BlockPanel extends JPanel {
             g.drawImage(imageComponent.getImage(), (int) imageComponent.getPosition().getX(), (int) imageComponent.getPosition().getY(), imageComponent.getWidth(), imageComponent.getHeight(), this);
         }
         for (ImageComponent imageComponent : imageComponents) {
-            if (imageComponent.isText()) {
+            if (imageComponent.isText() != 0) {
                 g.drawImage(imageComponent.getText(), (int) imageComponent.getPosition().getX() + imageComponent.getTextOffset(), 0, this);
             }
         }
@@ -189,13 +200,23 @@ public class BlockPanel extends JPanel {
                 .max().orElse(0);
     }
 
-    private void stretchImage(ImageComponent imageComponent, int x, int y) {
+    public void stretchImage(ImageComponent imageComponent, int x, int y) {
         imageComponent.stretch(x, y);
         for (Integer index : imageComponent.getStretchX()) {
             imageComponents.get(index).moveOriginalPosition(x, 0);
         }
         for (Integer index : imageComponent.getStretchY()) {
             imageComponents.get(index).moveOriginalPosition(0, y);
+        }
+        if(x != 0){
+            for(Block b : block.getConnections()){
+                if(b == null) continue;
+                BlockPanel bp = b.getBlockPanel();
+                Point point = getSnapLocation(bp.inType - 1).get(bp.snapIndex);
+                int dx = (int) (point.getX() - bp.getX());
+                int dy = (int) (point.getY() - bp.getY());
+                bp.recursiveMove(dx, dy);
+            }
         }
     }
 
@@ -235,5 +256,41 @@ public class BlockPanel extends JPanel {
             }
         }
         return indexes;
+    }
+
+    private int getSetIndex() {
+        for(ImageComponent component : this.imageComponents){
+            if(component.isText() == 2)
+                return this.imageComponents.indexOf(component);
+        }
+        return -1;
+    }
+
+    public void blockSetName(String name){
+        block.setName(name);
+    }
+
+    public void sendChar(Character c){
+        if(setIndex == -1) return;
+        String oldText = imageComponents.get(setIndex).getTextString();
+        if(c == '\b') {
+            String substring = oldText.substring(0, max(oldText.length() - 1, 0));
+            imageComponents.get(setIndex).setTextString(substring);
+        }
+        else {
+            imageComponents.get(setIndex).setTextString(oldText + c);
+        }
+        rescale(getParent().getHeight());
+    }
+
+    public String getBlockName() {
+        return block.getBlockName();
+    }
+
+    public String getBlockStringValue(){
+        if(block instanceof Variable<?> v){
+            return v.getPrint();
+        }
+        return null;
     }
 }

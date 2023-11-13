@@ -16,7 +16,9 @@ import org.ssc.model.variable.type.VInt;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class MainWindow extends JFrame {
     private final JButton runButton;
@@ -70,35 +72,50 @@ public class MainWindow extends JFrame {
         add(mainPanel);
         mainPanel.setVisible(true);
         setVisible(true);
+
+
+        setFocusable(true);
+        requestFocus();
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ALT) mainCanvasPanel.resetFocus();
+            }
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                mainCanvasPanel.sendChar(e.getKeyChar());
+            }
+        });
     }
 
     private MainMenuPanel getMainMenuPanel() {
-        MainMenuPanel blockPanel = new MainMenuPanel();
-        blockPanel.addOperationActionListener(e -> {
-            blockPanel.showOperation();
-            categoryUpdate(blockPanel);
+        MainMenuPanel mainMenuPanel = new MainMenuPanel();
+        mainMenuPanel.addOperationActionListener(e -> {
+            mainMenuPanel.showOperation();
+            categoryUpdate(mainMenuPanel);
         });
-        blockPanel.getOperationPanel().addButtonActionListener("+", e -> addBlocks(new Operator(Operator.Operation.ADD)));
-        blockPanel.getOperationPanel().addButtonActionListener("-", e -> addBlocks(new Operator(Operator.Operation.SUB)));
-        blockPanel.getOperationPanel().addButtonActionListener("*", e -> addBlocks(new Operator(Operator.Operation.MUL)));
-        blockPanel.getOperationPanel().addButtonActionListener("/", e -> addBlocks(new Operator(Operator.Operation.DIV)));
-        blockPanel.getOperationPanel().addButtonActionListener("%", e -> addBlocks(new Operator(Operator.Operation.MOD)));
-        blockPanel.addVariableActionListener(e -> {
-            blockPanel.showVariable();
-            categoryUpdate(blockPanel);
+        mainMenuPanel.getOperationPanel().addButtonActionListener("+", e -> addBlocks(new Operator(Operator.Operation.ADD)));
+        mainMenuPanel.getOperationPanel().addButtonActionListener("-", e -> addBlocks(new Operator(Operator.Operation.SUB)));
+        mainMenuPanel.getOperationPanel().addButtonActionListener("*", e -> addBlocks(new Operator(Operator.Operation.MUL)));
+        mainMenuPanel.getOperationPanel().addButtonActionListener("/", e -> addBlocks(new Operator(Operator.Operation.DIV)));
+        mainMenuPanel.getOperationPanel().addButtonActionListener("%", e -> addBlocks(new Operator(Operator.Operation.MOD)));
+        mainMenuPanel.addVariableActionListener(e -> {
+            mainMenuPanel.showVariable();
+            categoryUpdate(mainMenuPanel);
         });
-        blockPanel.getVariablePanel().addButtonActionListener("Int", e -> addBlocks(new VInt()));
-        blockPanel.getVariablePanel().addButtonActionListener("Float", e -> addBlocks(new VFloat()));
-        blockPanel.getVariablePanel().addButtonActionListener("Char", e -> addBlocks(new VChar()));
-        blockPanel.getVariablePanel().addButtonActionListener("Array", e -> addBlocks(new VArray<>()));
-        blockPanel.getVariablePanel().addButtonActionListener("Set", e -> addBlocks(new SetVariable()));
-        blockPanel.getVariablePanel().addButtonActionListener("Change", e -> addBlocks(new ChangeVariable()));
-        blockPanel.getVariablePanel().addButtonActionListener("Print", e -> addBlocks(new PrintVariable()));
-        blockPanel.addCloseActionListener(e -> {
-            blockPanel.showClose();
-            categoryUpdate(blockPanel);
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Int", e -> addBlocks(new VInt()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Float", e -> addBlocks(new VFloat()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Char", e -> addBlocks(new VChar()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Array", e -> addBlocks(new VArray<>()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Set", e -> addBlocks(new SetVariable()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Change", e -> addBlocks(new ChangeVariable()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Print", e -> addBlocks(new PrintVariable()));
+        mainMenuPanel.addCloseActionListener(e -> {
+            mainMenuPanel.showClose();
+            categoryUpdate(mainMenuPanel);
         });
-        return blockPanel;
+        return mainMenuPanel;
     }
 
     private void categoryUpdate(MainMenuPanel blockPanel) {

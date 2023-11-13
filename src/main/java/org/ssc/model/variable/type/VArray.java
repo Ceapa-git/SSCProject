@@ -66,7 +66,7 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
 
     @Override
     public String getPrint() {
-        if (value.size() == 0) {
+        if (value.isEmpty()) {
             if (isChar) return "";
             else return "[]";
         }
@@ -85,5 +85,25 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     @Override
     public Class<?> getType() {
         return value.getClass();
+    }
+
+    @Override
+    public void setName(String name) {
+        try{
+            if(name.length()>=2){
+                if(name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']'){
+                    //todo
+                    return;
+                }
+                else if(name.charAt(0) == '\"' && name.charAt(name.length() - 1) == '\"'){
+                    //todo
+                    return;
+                }
+            }
+            System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
+        }
+        catch (Exception e){
+            System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
+        }
     }
 }

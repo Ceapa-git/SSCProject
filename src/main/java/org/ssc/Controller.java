@@ -189,7 +189,8 @@ public class Controller {
 
     private static Variable<?> compute(Block current) throws Exception {
         if (current instanceof Variable<?>) return (Variable<?>) current;
-        Variable<?> value1, value2;//todo considerat daca nu trebuie in switch la operator
+        Variable<?> value1, value2;//todo
+        // considerat daca nu trebuie in switch la operator
         Variable<?> result = new VInt();
 
         if (current.getConnection(0) == null) throw new Exception("No connections");

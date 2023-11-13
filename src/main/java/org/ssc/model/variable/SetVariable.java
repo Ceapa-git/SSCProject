@@ -16,10 +16,12 @@ public class SetVariable extends Block {
         this.name = name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return this.name;
     }

@@ -10,6 +10,7 @@ public class ConsoleMenuPanel extends JPanel {
     public ConsoleMenuPanel() {
         setBackground(Color.WHITE);
         setLayout(new GridLayout(1, 0));
+        setFocusable(false);
 
         clear = new JButton("Clear");
         add(clear);

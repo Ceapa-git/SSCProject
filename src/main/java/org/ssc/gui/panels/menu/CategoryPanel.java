@@ -12,6 +12,7 @@ public class CategoryPanel extends JPanel {
     private final HashMap<String, JButton> buttons;
 
     public CategoryPanel() {
+        setFocusable(false);
         innerPanel = new JPanel();
         innerPanel.setLayout(new GridLayout(0, 1));
         layout = new SpringLayout();
@@ -31,6 +32,7 @@ public class CategoryPanel extends JPanel {
 
     protected void addButton(String name) {
         JButton button = new JButton(name);
+        button.setFocusable(false);
         buttons.put(name, button);
         innerPanel.add(button);
         layout.putConstraint(SpringLayout.SOUTH, innerPanel, innerPanel.getPreferredSize().height, SpringLayout.NORTH, this);

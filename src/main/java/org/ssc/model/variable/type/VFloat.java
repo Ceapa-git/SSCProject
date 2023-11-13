@@ -88,4 +88,14 @@ public class VFloat extends Block implements Variable<Float> {
     public Class<?> getType() {
         return value.getClass();
     }
+
+    @Override
+    public void setName(String name) {
+        try{
+            value = Float.parseFloat(name);
+        }
+        catch (Exception e){
+            System.out.println("\u001B[31m" + name + " not float" + "\u001B[0m");
+        }
+    }
 }
