@@ -3,9 +3,6 @@ package org.ssc.model.math;
 import org.ssc.model.Block;
 
 public class Operator extends Block {
-    public enum Operation {ADD, SUB, MUL, DIV, MOD, UNDEFINED}
-
-    ;
     private Operation operation;
 
     public Operator() {
@@ -27,4 +24,6 @@ public class Operator extends Block {
     public void setOperation(Operation operation) {
         this.operation = operation;
     }
+
+    public enum Operation {ADD, SUB, MUL, DIV, MOD, UNDEFINED}
 }

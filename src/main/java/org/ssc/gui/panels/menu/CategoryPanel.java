@@ -3,7 +3,6 @@ package org.ssc.gui.panels.menu;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CategoryPanel extends JPanel {

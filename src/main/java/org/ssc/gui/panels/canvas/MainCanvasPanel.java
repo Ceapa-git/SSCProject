@@ -4,7 +4,10 @@ import org.ssc.gui.BlockPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainCanvasPanel extends JPanel {
     private Point offset;
@@ -53,16 +56,16 @@ public class MainCanvasPanel extends JPanel {
         add(blockPanel);
     }
 
-    public void resetFocus(){
+    public void resetFocus() {
         focus = null;
     }
 
-    public void sendChar(Character c){
-        if(focus == null) return;
+    public void sendChar(Character c) {
+        if (focus == null) return;
         focus.sendChar(c);
     }
 
-    public void setFocus(BlockPanel blockPanel){
+    public void setFocus(BlockPanel blockPanel) {
         focus = blockPanel;
     }
 }

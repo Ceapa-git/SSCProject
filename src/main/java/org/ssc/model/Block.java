@@ -25,20 +25,20 @@ public class Block {
         this.blockName = "empty";
     }
 
-    public void setBlockName(String blockName) {
-        this.blockName = blockName;
+    public BlockPanel getBlockPanel() {
+        return blockPanel;
     }
 
     public void setBlockPanel(BlockPanel blockPanel) {
         this.blockPanel = blockPanel;
     }
 
-    public BlockPanel getBlockPanel() {
-        return blockPanel;
-    }
-
     public String getBlockName() {
         return this.blockName;
+    }
+
+    public void setBlockName(String blockName) {
+        this.blockName = blockName;
     }
 
     public Block getPrevious() {
@@ -99,7 +99,10 @@ public class Block {
         return this.connections.toArray(new Block[connections.size()]);
     }
 
-    public void setName(String name) {}
+    public String getName() {
+        return null;
+    }
 
-    public String getName() {return null;}
+    public void setName(String name) {
+    }
 }

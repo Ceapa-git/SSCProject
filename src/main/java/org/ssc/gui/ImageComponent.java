@@ -3,7 +3,8 @@ package org.ssc.gui;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.net.URL;
@@ -13,32 +14,9 @@ import java.util.Objects;
 import static java.lang.Math.max;
 
 public class ImageComponent {
-    private final Image originalImage;
-    private Image image;
-    private final JLabel draggableArea;
-    private final Point originalPosition;
-    private final Point movedPosition;
-    private Point position;
-    private Rectangle area;
-    private final boolean draggable;
-    private final boolean stretchable;
-    private Point stretch;
-    private final ArrayList<Integer> stretchX;
-    private final ArrayList<Integer> stretchY;
-    private Point snapPoint = null;
-    private int snapType = -1;
-    private double ratio = 1;
-    private Point snapLocation = null;
-    private int snapIndex = -1;
-    private final int hasText;
-    private int textOffset = -1;
-    private String text;
-    private Image originalTextImage;
-    private Image textImage;
     private static final Font originalFont;
     private static final int fontSize = 70;
     private static final int charWidth;
-    private final BlockPanel blockPanel;
 
     static {
         try {
@@ -56,6 +34,30 @@ public class ImageComponent {
             throw new RuntimeException(e);
         }
     }
+
+    private final Image originalImage;
+    private final JLabel draggableArea;
+    private final Point originalPosition;
+    private final Point movedPosition;
+    private final boolean draggable;
+    private final boolean stretchable;
+    private final ArrayList<Integer> stretchX;
+    private final ArrayList<Integer> stretchY;
+    private final int hasText;
+    private final BlockPanel blockPanel;
+    private Image image;
+    private Point position;
+    private Rectangle area;
+    private Point stretch;
+    private Point snapPoint = null;
+    private int snapType = -1;
+    private double ratio = 1;
+    private Point snapLocation = null;
+    private int snapIndex = -1;
+    private int textOffset = -1;
+    private String text;
+    private Image originalTextImage;
+    private Image textImage;
 
     public ImageComponent(BlockPanel blockPanel, String line, String stretchable, String text) {
         this(blockPanel, line, stretchable, text, false);
@@ -116,7 +118,7 @@ public class ImageComponent {
             this.hasText = Integer.parseInt(tokens[0]);
             if (this.hasText != 0) {
                 this.textOffset = Integer.parseInt(tokens[1]);
-                if(blockPanel.getBlockName().equals("Variable"))
+                if (blockPanel.getBlockName().equals("Variable"))
                     this.text = blockPanel.getBlockStringValue();
                 else
                     this.text = text.split(":")[1];
@@ -142,6 +144,18 @@ public class ImageComponent {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static int getMaxX(Object imageComponent) {
+        return (int) (((ImageComponent) imageComponent).movedPosition.getX() +
+                ((ImageComponent) imageComponent).getOriginalWidth() +
+                ((ImageComponent) imageComponent).stretch.getX());
+    }
+
+    public static int getMaxY(Object imageComponent) {
+        return (int) (((ImageComponent) imageComponent).movedPosition.getY() +
+                ((ImageComponent) imageComponent).getOriginalHeight() +
+                ((ImageComponent) imageComponent).stretch.getY());
     }
 
     public Image getImage() {
@@ -181,18 +195,6 @@ public class ImageComponent {
 
     public Point getPosition() {
         return position;
-    }
-
-    public static int getMaxX(Object imageComponent) {
-        return (int) (((ImageComponent) imageComponent).movedPosition.getX() +
-                ((ImageComponent) imageComponent).getOriginalWidth() +
-                ((ImageComponent) imageComponent).stretch.getX());
-    }
-
-    public static int getMaxY(Object imageComponent) {
-        return (int) (((ImageComponent) imageComponent).movedPosition.getY() +
-                ((ImageComponent) imageComponent).getOriginalHeight() +
-                ((ImageComponent) imageComponent).stretch.getY());
     }
 
     public void rescale(double ratio) {
@@ -239,10 +241,6 @@ public class ImageComponent {
         this.snapLocation = new Point(xLoc, yLoc);
     }
 
-    public void setSnapIndex(int index) {
-        this.snapIndex = index;
-    }
-
     public Point getSnapPoint() {
         if (this.snapType == -1) return null;
         Point point = new Point(snapPoint);
@@ -266,6 +264,10 @@ public class ImageComponent {
         return this.snapIndex;
     }
 
+    public void setSnapIndex(int index) {
+        this.snapIndex = index;
+    }
+
     public int isText() {
         return this.hasText;
     }
@@ -284,8 +286,12 @@ public class ImageComponent {
         textImage = originalTextImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
     }
 
-    public void setTextString(String text){
-        if(hasText == 0) return;
+    public String getTextString() {
+        return text;
+    }
+
+    public void setTextString(String text) {
+        if (hasText == 0) return;
         this.text = text;
         int height = originalImage.getHeight(null);
         BufferedImage bufferedTextImage = new BufferedImage(max(this.text.length(), 1) * charWidth, height, BufferedImage.TYPE_INT_ARGB);
@@ -303,9 +309,5 @@ public class ImageComponent {
         blockPanel.stretchImage(this, this.text.length() * charWidth, 0);
         blockPanel.blockSetName(text);
         redrawText();
-    }
-
-    public String getTextString(){
-        return text;
     }
 }

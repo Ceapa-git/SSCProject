@@ -150,6 +150,7 @@ public class Controller {
     }
 
     private static void run(Block start, MainWindow mainWindow) {
+        //variables.clear();
         Block current = start;
         mainWindow.addTextNL("Running");
         try {

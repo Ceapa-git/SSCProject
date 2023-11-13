@@ -6,11 +6,11 @@ import org.ssc.model.variable.Variable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,16 +18,16 @@ import java.util.Objects;
 import static java.lang.Math.max;
 
 public class BlockPanel extends JPanel {
+    private static final int snapRadius = 20;
     private final Block block;
     private final ArrayList<ImageComponent> imageComponents;
+    private final BlockPanel This = this;
+    private final int setIndex;
     private Point moveOffset;
     private Point position;
     private double oldRatio = 1;
-    private final BlockPanel This = this;
     private boolean snapped;
-    private static final int snapRadius = 20;
     private int inType;
-    private final int setIndex;
     private int snapIndex;
 
     public BlockPanel(Block block) {
@@ -69,14 +69,14 @@ public class BlockPanel extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 moveOffset = e.getPoint();
                 getParent().setComponentZOrder(This, 0);
-                ((MainCanvasPanel)getParent()).setFocus(This);
+                ((MainCanvasPanel) getParent()).setFocus(This);
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
                 moveOffset = e.getPoint();
                 getParent().setComponentZOrder(This, 0);
-                ((MainCanvasPanel)getParent()).setFocus(This);
+                ((MainCanvasPanel) getParent()).setFocus(This);
             }
         }, new MouseAdapter() {
             @Override
@@ -127,7 +127,7 @@ public class BlockPanel extends JPanel {
                     This.block.setPrevious(null);
                     recursiveMove(dx, dy);
                 }
-                ((MainCanvasPanel)getParent()).setFocus(This);
+                ((MainCanvasPanel) getParent()).setFocus(This);
                 revalidate();
                 repaint();
             }
@@ -136,6 +136,12 @@ public class BlockPanel extends JPanel {
         //stretchImage(imageComponents.get(0),100,50);
         add(imageComponents.get(0).getDraggableArea());
         setSize(getMaxWidth(), getMaxHeight());
+
+        if (setIndex != -1) {
+            String oldText = imageComponents.get(setIndex).getTextString();
+            imageComponents.get(setIndex).setTextString("");
+            imageComponents.get(setIndex).setTextString(oldText);
+        }
     }
 
     private void recursiveMove(int dx, int dy) {
@@ -208,9 +214,9 @@ public class BlockPanel extends JPanel {
         for (Integer index : imageComponent.getStretchY()) {
             imageComponents.get(index).moveOriginalPosition(0, y);
         }
-        if(x != 0){
-            for(Block b : block.getConnections()){
-                if(b == null) continue;
+        if (x != 0) {
+            for (Block b : block.getConnections()) {
+                if (b == null) continue;
                 BlockPanel bp = b.getBlockPanel();
                 Point point = getSnapLocation(bp.inType - 1).get(bp.snapIndex);
                 int dx = (int) (point.getX() - bp.getX());
@@ -259,25 +265,24 @@ public class BlockPanel extends JPanel {
     }
 
     private int getSetIndex() {
-        for(ImageComponent component : this.imageComponents){
-            if(component.isText() == 2)
+        for (ImageComponent component : this.imageComponents) {
+            if (component.isText() == 2)
                 return this.imageComponents.indexOf(component);
         }
         return -1;
     }
 
-    public void blockSetName(String name){
+    public void blockSetName(String name) {
         block.setName(name);
     }
 
-    public void sendChar(Character c){
-        if(setIndex == -1) return;
+    public void sendChar(Character c) {
+        if (setIndex == -1) return;
         String oldText = imageComponents.get(setIndex).getTextString();
-        if(c == '\b') {
+        if (c == '\b') {
             String substring = oldText.substring(0, max(oldText.length() - 1, 0));
             imageComponents.get(setIndex).setTextString(substring);
-        }
-        else {
+        } else {
             imageComponents.get(setIndex).setTextString(oldText + c);
         }
         rescale(getParent().getHeight());
@@ -287,8 +292,8 @@ public class BlockPanel extends JPanel {
         return block.getBlockName();
     }
 
-    public String getBlockStringValue(){
-        if(block instanceof Variable<?> v){
+    public String getBlockStringValue() {
+        if (block instanceof Variable<?> v) {
             return v.getPrint();
         }
         return null;

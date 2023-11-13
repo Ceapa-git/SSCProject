@@ -5,8 +5,6 @@ import org.ssc.model.TypeMismatchException;
 import org.ssc.model.math.InvalidOperation;
 import org.ssc.model.variable.Variable;
 
-import java.nio.file.attribute.UserPrincipalLookupService;
-
 public class VChar extends Block implements Variable<Character> {
     private Character value;
 
@@ -76,12 +74,11 @@ public class VChar extends Block implements Variable<Character> {
 
     @Override
     public void setName(String name) {
-        try{
+        try {
             if (name.length() != 1)
                 System.out.println("\u001B[31m" + name + " of length " + name.length() + " not char" + "\u001B[0m");
             else value = name.charAt(0);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("\u001B[31m" + name + " not char" + "\u001B[0m");
         }
     }

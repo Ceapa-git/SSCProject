@@ -8,8 +8,8 @@ import org.ssc.model.variable.Variable;
 import java.util.ArrayList;
 
 public class VArray<T extends Variable<?>> extends Block implements Variable<ArrayList<T>> {
-    private ArrayList<T> value;
     private final boolean isChar;
+    private ArrayList<T> value;
 
     public VArray() {
         this.isChar = false;
@@ -89,20 +89,18 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
 
     @Override
     public void setName(String name) {
-        try{
-            if(name.length()>=2){
-                if(name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']'){
+        try {
+            if (name.length() >= 2) {
+                if (name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']') {
                     //todo
                     return;
-                }
-                else if(name.charAt(0) == '\"' && name.charAt(name.length() - 1) == '\"'){
+                } else if (name.charAt(0) == '\"' && name.charAt(name.length() - 1) == '\"') {
                     //todo
                     return;
                 }
             }
             System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
         }
     }
