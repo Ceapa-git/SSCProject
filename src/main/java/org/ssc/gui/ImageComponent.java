@@ -123,7 +123,8 @@ public class ImageComponent {
                 else
                     this.text = text.split(":")[1];
                 int height = originalImage.getHeight(null);
-                BufferedImage bufferedTextImage = new BufferedImage(this.text.length() * charWidth, height, BufferedImage.TYPE_INT_ARGB);
+                int width = max(charWidth, this.text.length() * charWidth);
+                BufferedImage bufferedTextImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 g2d = bufferedTextImage.createGraphics();
                 g2d.setFont(originalFont);
                 g2d.setColor(Color.black);
@@ -132,7 +133,7 @@ public class ImageComponent {
                 int descent = fontMetrics.getDescent();
                 g2d.drawString(this.text, 0, (height - (ascent + descent)) / 2 + ascent);
                 g2d.setColor(Color.cyan);
-                g2d.drawRect(0, 0, this.text.length() * charWidth - 1, height - 1);
+                g2d.drawRect(0, 0, width - 1, height - 1);
                 g2d.dispose();
                 originalTextImage = new ImageIcon(bufferedTextImage).getImage();
                 textImage = new ImageIcon(bufferedTextImage).getImage();

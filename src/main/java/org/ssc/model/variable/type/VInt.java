@@ -86,6 +86,13 @@ public class VInt extends Block implements Variable<Integer> {
     }
 
     @Override
+    public Variable<Integer> cloneVariable() {
+        VInt clone = new VInt();
+        clone.value = this.value;
+        return clone;
+    }
+
+    @Override
     public void setName(String name) {
         try {
             value = Integer.parseInt(name);

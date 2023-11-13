@@ -107,6 +107,7 @@ public class MainWindow extends JFrame {
         mainMenuPanel.getVariablePanel().addButtonActionListener("Float", e -> addBlocks(new VFloat()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Char", e -> addBlocks(new VChar()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Array", e -> addBlocks(new VArray<>()));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("String", e -> addBlocks(new VArray<VChar>(new VChar())));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Set", e -> addBlocks(new SetVariable()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Change", e -> addBlocks(new ChangeVariable()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Print", e -> addBlocks(new PrintVariable()));

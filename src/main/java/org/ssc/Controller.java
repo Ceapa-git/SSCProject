@@ -102,7 +102,7 @@ public class Controller {
 
         //----------------------------------------------------
 
-        VArray<VChar> string = new VArray<>(true);
+        VArray<VChar> string = new VArray<>(new VChar());
         string.setValue(new ArrayList<VChar>());
         string.getValue().add(c);
         string.getValue().add(c);
@@ -160,8 +160,10 @@ public class Controller {
                         SetVariable block = (SetVariable) current;
                         String name = block.getName();
                         Variable<?> value = compute(block.getConnection(0));
-                        if (!variables.containsKey(name)) variables.put(name, value);
+                        System.out.println("set " + name + " to " + value.getPrint());
+                        if (!variables.containsKey(name)) variables.put(name, value.cloneVariable());
                         else variables.get(name).setValue(value.getValue());
+                        System.out.println("set " + name + " to " + value.getPrint());
                         break;
                     }
                     case "PrintVariable": {
@@ -175,6 +177,7 @@ public class Controller {
                         String name = block.getName();
                         Variable<?> value = compute(block.getConnection(0));
                         if (variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
+                        System.out.println("change " + name + " with " + value.getPrint());
                         break;
                     }
                 }

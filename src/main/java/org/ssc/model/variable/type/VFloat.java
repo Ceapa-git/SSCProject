@@ -90,6 +90,13 @@ public class VFloat extends Block implements Variable<Float> {
     }
 
     @Override
+    public Variable<Float> cloneVariable() {
+        VFloat clone = new VFloat();
+        clone.value = this.value;
+        return clone;
+    }
+
+    @Override
     public void setName(String name) {
         try {
             value = Float.parseFloat(name);

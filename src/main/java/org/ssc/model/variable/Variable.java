@@ -23,4 +23,6 @@ public interface Variable<T> {
     String getPrint();
 
     Class<?> getType();
+
+    Variable<T> cloneVariable();
 }

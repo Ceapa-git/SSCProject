@@ -17,8 +17,11 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
         this.blockName = "Variable";
     }
 
-    public VArray(boolean isChar) {
-        this.isChar = isChar;
+    public VArray(T charType) {
+        if (!(charType instanceof VChar)) {
+            throw new RuntimeException("not valid string format");
+        }
+        this.isChar = true;
         this.value = new ArrayList<>();
         this.blockName = "Variable";
     }
@@ -88,20 +91,32 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     }
 
     @Override
+    public Variable<ArrayList<T>> cloneVariable() {
+        VArray<T> clone;
+        if (isChar) clone = (VArray<T>) new VArray<>(new VChar());
+        else clone = new VArray<>();
+        clone.value = new ArrayList<>(this.value);
+        return clone;
+    }
+
+    @Override
     public void setName(String name) {
         try {
-            if (name.length() >= 2) {
-                if (name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']') {
-                    //todo
-                    return;
-                } else if (name.charAt(0) == '\"' && name.charAt(name.length() - 1) == '\"') {
-                    //todo
-                    return;
+            if (isChar) {
+                value = new ArrayList<>(name.length());
+                for (Character c : name.toCharArray()) {
+                    VChar vc = new VChar();
+                    vc.setValue(c);
+                    value.add((T) vc);
                 }
+                return;
+            } else if (name.length() >= 2 && name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']') {
+                //todo
+                return;
             }
-            System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
+            System.out.println("\u001B[31m" + name + " not array" + "\u001B[0m");
         } catch (Exception e) {
-            System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
+            System.out.println("\u001B[31m" + name + " not array" + "\u001B[0m");
         }
     }
 }

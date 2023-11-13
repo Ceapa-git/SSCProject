@@ -73,6 +73,13 @@ public class VChar extends Block implements Variable<Character> {
     }
 
     @Override
+    public Variable<Character> cloneVariable() {
+        VChar clone = new VChar();
+        clone.value = this.value;
+        return clone;
+    }
+
+    @Override
     public void setName(String name) {
         try {
             if (name.length() != 1)
