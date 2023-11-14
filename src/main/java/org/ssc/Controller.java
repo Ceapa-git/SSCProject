@@ -2,6 +2,7 @@ package org.ssc;
 
 import org.ssc.gui.MainWindow;
 import org.ssc.model.Block;
+import org.ssc.model.math.ComputeException;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
@@ -150,7 +151,7 @@ public class Controller {
     }
 
     private static void run(Block start, MainWindow mainWindow) {
-        //variables.clear();
+        variables.clear();
         Block current = start;
         mainWindow.addTextNL("Running");
         try {
@@ -160,45 +161,60 @@ public class Controller {
                         SetVariable block = (SetVariable) current;
                         String name = block.getName();
                         Variable<?> value = compute(block.getConnection(0));
-                        System.out.println("set " + name + " to " + value.getPrint());
-                        if (!variables.containsKey(name)) variables.put(name, value.cloneVariable());
-                        else variables.get(name).setValue(value.getValue());
-                        System.out.println("set " + name + " to " + value.getPrint());
+                        variables.put(name, value.cloneVariable());
                         break;
                     }
                     case "PrintVariable": {
                         PrintVariable block = (PrintVariable) current;
                         String name = block.getName();
-                        mainWindow.addTextNL(variables.get(name).getPrint());
+                        if (variables.containsKey(name))
+                            mainWindow.addTextNL(variables.get(name).getPrint());
+                        else {
+                            mainWindow.addTextNL("Error");
+                            mainWindow.addTextNL(name + " does not exist");
+                            return;
+                        }
                         break;
                     }
                     case "ChangeVariable": {
                         ChangeVariable block = (ChangeVariable) current;
                         String name = block.getName();
                         Variable<?> value = compute(block.getConnection(0));
-                        if (variables.containsKey(name)) variables.get(name).changeValue(value.getValue());
-                        System.out.println("change " + name + " with " + value.getPrint());
+                        if (variables.containsKey(name)) {
+                            if (variables.get(name).getType().equals(value.getType()))
+                                variables.get(name).changeValue(value.getValue());
+                            else {
+                                mainWindow.addTextNL("Error");
+                                mainWindow.addTextNL(name + " is not " + value.getType().getName());
+                                return;
+                            }
+                        } else {
+                            mainWindow.addTextNL("Error");
+                            mainWindow.addTextNL(name + " does not exist");
+                            return;
+                        }
                         break;
                     }
                 }
                 current = current.getNext();
             }
-        } catch (Exception e) {
-            mainWindow.addTextNL(e.getLocalizedMessage());
-            mainWindow.addTextNL("Finished Unsuccessfully");
+        } catch (ComputeException e) {
+            mainWindow.addTextNL("Error");
+            mainWindow.addTextNL(e.getMessageString());
             return;
         }
         mainWindow.addTextNL("Finished Successfully");
     }
 
-    private static Variable<?> compute(Block current) throws Exception {
+    private static Variable<?> compute(Block current) throws ComputeException {
+        if (current == null) throw new ComputeException("No connection");
         if (current instanceof Variable<?>) return (Variable<?>) current;
         Variable<?> value1, value2;//todo
         // considerat daca nu trebuie in switch la operator
         Variable<?> result = new VInt();
 
-        if (current.getConnection(0) == null) throw new Exception("No connections");
-        if (current.getConnection(1) == null) throw new Exception("Not enough connections");
+        if (current.getConnection(0) == null) throw new ComputeException("No connections");
+        if (current.getConnection(1) == null) throw new ComputeException("Not enough connections");
 
         if (!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
         else value1 = (Variable<?>) current.getConnection(0);

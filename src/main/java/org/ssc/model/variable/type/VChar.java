@@ -80,13 +80,18 @@ public class VChar extends Block implements Variable<Character> {
     }
 
     @Override
-    public void setName(String name) {
+    public boolean setName(String name) {
         try {
-            if (name.length() != 1)
+            if (name.length() != 1) {
                 System.out.println("\u001B[31m" + name + " of length " + name.length() + " not char" + "\u001B[0m");
-            else value = name.charAt(0);
+                return false;
+            } else {
+                value = name.charAt(0);
+                return true;
+            }
         } catch (Exception e) {
             System.out.println("\u001B[31m" + name + " not char" + "\u001B[0m");
+            return false;
         }
     }
 }

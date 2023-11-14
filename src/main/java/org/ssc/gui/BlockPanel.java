@@ -273,7 +273,14 @@ public class BlockPanel extends JPanel {
     }
 
     public void blockSetName(String name) {
-        block.setName(name);
+        if (!block.setName(name)) {
+            Component p = getParent();
+            while (p != null && !(p instanceof MainWindow)) {
+                p = p.getParent();
+            }
+            if (p != null)
+                ((MainWindow) p).addTextNL(name + " invalid value for " + block.getClass().getName());
+        }
     }
 
     public void sendChar(Character c) {

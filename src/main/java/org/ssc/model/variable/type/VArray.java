@@ -100,7 +100,7 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
     }
 
     @Override
-    public void setName(String name) {
+    public boolean setName(String name) {
         try {
             if (isChar) {
                 value = new ArrayList<>(name.length());
@@ -109,14 +109,16 @@ public class VArray<T extends Variable<?>> extends Block implements Variable<Arr
                     vc.setValue(c);
                     value.add((T) vc);
                 }
-                return;
+                return true;
             } else if (name.length() >= 2 && name.charAt(0) == '[' && name.charAt(name.length() - 1) == ']') {
                 //todo
-                return;
+                return true;
             }
             System.out.println("\u001B[31m" + name + " not array" + "\u001B[0m");
+            return false;
         } catch (Exception e) {
             System.out.println("\u001B[31m" + name + " not array" + "\u001B[0m");
+            return false;
         }
     }
 }

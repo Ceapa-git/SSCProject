@@ -97,11 +97,13 @@ public class VFloat extends Block implements Variable<Float> {
     }
 
     @Override
-    public void setName(String name) {
+    public boolean setName(String name) {
         try {
             value = Float.parseFloat(name);
+            return true;
         } catch (Exception e) {
             System.out.println("\u001B[31m" + name + " not float" + "\u001B[0m");
+            return false;
         }
     }
 }

@@ -93,11 +93,13 @@ public class VInt extends Block implements Variable<Integer> {
     }
 
     @Override
-    public void setName(String name) {
+    public boolean setName(String name) {
         try {
             value = Integer.parseInt(name);
+            return true;
         } catch (Exception e) {
             System.out.println("\u001B[31m" + name + " not int" + "\u001B[0m");
+            return false;
         }
     }
 }

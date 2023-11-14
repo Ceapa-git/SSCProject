@@ -22,7 +22,8 @@ public class ChangeVariable extends Block {
     }
 
     @Override
-    public void setName(String name) {
+    public boolean setName(String name) {
         this.name = name;
+        return true;
     }
 }

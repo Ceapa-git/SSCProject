@@ -13,6 +13,7 @@ public class ConsoleMenuPanel extends JPanel {
         setFocusable(false);
 
         clear = new JButton("Clear");
+        clear.setFocusable(false);
         add(clear);
     }
 

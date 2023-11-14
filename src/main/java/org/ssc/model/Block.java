@@ -103,6 +103,7 @@ public class Block {
         return null;
     }
 
-    public void setName(String name) {
+    public boolean setName(String name) {
+        return false;
     }
 }
