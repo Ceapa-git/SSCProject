@@ -6,7 +6,6 @@ public class VariablePanel extends CategoryPanel {
         addButton("Int");
         addButton("Float");
         addButton("Char");
-        addButton("Array");
         addButton("String");
         addButton("Set");
         addButton("Change");

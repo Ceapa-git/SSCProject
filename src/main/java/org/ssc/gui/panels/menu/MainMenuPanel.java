@@ -10,9 +10,12 @@ public class MainMenuPanel extends JPanel {
     private final CardLayout cardLayout;
     private final VariablePanel variablePanel;
     private final OperationPanel operationPanel;
+    private final LogicPanel logicPanel;
     private final JButton operation;
     private final JButton variable;
+    private final JButton logic;
     private final JButton close;
+    private final JButton debugStartTree;
 
     public MainMenuPanel() {
         setFocusable(false);
@@ -34,9 +37,15 @@ public class MainMenuPanel extends JPanel {
         variable = new JButton("Variable");
         variable.setFocusable(false);
         blockCategoryInnerPanel.add(variable);
+        logic = new JButton("Logic");
+        logic.setFocusable(false);
+        blockCategoryInnerPanel.add(logic);
         close = new JButton("Close");
         close.setFocusable(false);
         blockCategoryInnerPanel.add(close);
+        debugStartTree = new JButton("debugStartTree");
+        debugStartTree.setFocusable(false);
+        blockCategoryInnerPanel.add(debugStartTree);
 
         blockCategoryPanel.add(blockCategoryInnerPanel);
         blockCategoryLayout.putConstraint(SpringLayout.NORTH, blockCategoryInnerPanel, 0, SpringLayout.NORTH, blockCategoryPanel);
@@ -60,6 +69,8 @@ public class MainMenuPanel extends JPanel {
         cardPanel.add(variablePanel, "variable");
         operationPanel = new OperationPanel();
         cardPanel.add(operationPanel, "operation");
+        logicPanel = new LogicPanel();
+        cardPanel.add(logicPanel, "logic");
 
         add(cardPanel);
 
@@ -76,9 +87,15 @@ public class MainMenuPanel extends JPanel {
     public void addVariableActionListener(ActionListener listener) {
         variable.addActionListener(listener);
     }
+    public void addLogicActionListener(ActionListener listener) {
+        logic.addActionListener(listener);
+    }
 
     public void addCloseActionListener(ActionListener listener) {
         close.addActionListener(listener);
+    }
+    public void addDebugStartTreeActionListener(ActionListener listener) {
+        debugStartTree.addActionListener(listener);
     }
 
     public void showOperation() {
@@ -93,6 +110,12 @@ public class MainMenuPanel extends JPanel {
         setPreferredSize(new Dimension(width, getPreferredSize().height));
     }
 
+    public void showLogic() {
+        int width = blockCategoryPanel.getPreferredSize().width + cardPanel.getPreferredSize().width;
+        cardLayout.show(cardPanel, "logic");
+        setPreferredSize(new Dimension(width, getPreferredSize().height));
+    }
+
     public void showClose() {
         int width = blockCategoryPanel.getPreferredSize().width;
         setPreferredSize(new Dimension(width, getPreferredSize().height));
@@ -104,5 +127,8 @@ public class MainMenuPanel extends JPanel {
 
     public OperationPanel getOperationPanel() {
         return operationPanel;
+    }
+    public LogicPanel getLogicPanel() {
+        return logicPanel;
     }
 }

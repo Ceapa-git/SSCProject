@@ -4,6 +4,8 @@ import org.ssc.gui.panels.canvas.MainCanvasPanel;
 import org.ssc.gui.panels.console.MainConsolePanel;
 import org.ssc.gui.panels.menu.MainMenuPanel;
 import org.ssc.model.Block;
+import org.ssc.model.logic.If;
+import org.ssc.model.logic.While;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
@@ -25,6 +27,7 @@ public class MainWindow extends JFrame {
     private final JPanel mainPanel;
     private final MainConsolePanel mainConsolePanel;
     private final MainCanvasPanel mainCanvasPanel;
+    private final MainMenuPanel mainMenuPanel;
 
     public MainWindow() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -53,7 +56,7 @@ public class MainWindow extends JFrame {
         mainLayout.putConstraint(SpringLayout.WEST, mainConsolePanel, 0, SpringLayout.WEST, mainPanel);
         mainLayout.putConstraint(SpringLayout.EAST, mainConsolePanel, 0, SpringLayout.EAST, mainPanel);
 
-        MainMenuPanel mainMenuPanel = getMainMenuPanel();
+        mainMenuPanel = getMainMenuPanel();
         mainPanel.add(mainMenuPanel);
         mainLayout.putConstraint(SpringLayout.NORTH, mainMenuPanel, 0, SpringLayout.NORTH, mainPanel);
         mainLayout.putConstraint(SpringLayout.SOUTH, mainMenuPanel, 0, SpringLayout.NORTH, mainConsolePanel);
@@ -99,6 +102,7 @@ public class MainWindow extends JFrame {
         mainMenuPanel.getOperationPanel().addButtonActionListener("*", e -> addBlocks(new Operator(Operator.Operation.MUL)));
         mainMenuPanel.getOperationPanel().addButtonActionListener("/", e -> addBlocks(new Operator(Operator.Operation.DIV)));
         mainMenuPanel.getOperationPanel().addButtonActionListener("%", e -> addBlocks(new Operator(Operator.Operation.MOD)));
+
         mainMenuPanel.addVariableActionListener(e -> {
             mainMenuPanel.showVariable();
             categoryUpdate(mainMenuPanel);
@@ -106,11 +110,18 @@ public class MainWindow extends JFrame {
         mainMenuPanel.getVariablePanel().addButtonActionListener("Int", e -> addBlocks(new VInt()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Float", e -> addBlocks(new VFloat()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Char", e -> addBlocks(new VChar()));
-        mainMenuPanel.getVariablePanel().addButtonActionListener("Array", e -> addBlocks(new VArray<>()));
-        mainMenuPanel.getVariablePanel().addButtonActionListener("String", e -> addBlocks(new VArray<VChar>(new VChar())));
+        mainMenuPanel.getVariablePanel().addButtonActionListener("String", e -> addBlocks(new VArray<>(new VChar())));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Set", e -> addBlocks(new SetVariable()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Change", e -> addBlocks(new ChangeVariable()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Print", e -> addBlocks(new PrintVariable()));
+
+        mainMenuPanel.addLogicActionListener(e -> {
+            mainMenuPanel.showLogic();
+            categoryUpdate(mainMenuPanel);
+        });
+        mainMenuPanel.getLogicPanel().addButtonActionListener("If", e -> addBlocks(new If()));
+        mainMenuPanel.getLogicPanel().addButtonActionListener("While", e -> addBlocks(new While()));
+
         mainMenuPanel.addCloseActionListener(e -> {
             mainMenuPanel.showClose();
             categoryUpdate(mainMenuPanel);
@@ -157,5 +168,9 @@ public class MainWindow extends JFrame {
 
     public void addTextNL(String text) {
         mainConsolePanel.addTextNL(text);
+    }
+
+    public void addDebugStartTreeActionListener(ActionListener listener) {
+        mainMenuPanel.addDebugStartTreeActionListener(listener);
     }
 }

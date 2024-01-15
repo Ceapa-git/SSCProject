@@ -7,7 +7,7 @@ ChangeVariable.png 325 200 50 100 450 0
 2 0 :x
 ChangeVariable.png 375 200 125 100 500 0
 0
-1 0 :to
+1 0 :by
 ChangeVariable.png 50 300 100 50 50 100
 0
 0

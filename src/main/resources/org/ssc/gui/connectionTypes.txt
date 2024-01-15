@@ -4,3 +4,6 @@
 2 - 3 : out - in
     < <
     out in
+4 - 1 : out - in (while, if)
+    V out
+    V in

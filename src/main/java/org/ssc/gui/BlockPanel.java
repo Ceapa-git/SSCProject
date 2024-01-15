@@ -2,6 +2,7 @@ package org.ssc.gui;
 
 import org.ssc.gui.panels.canvas.MainCanvasPanel;
 import org.ssc.model.Block;
+import org.ssc.model.math.Operator;
 import org.ssc.model.variable.Variable;
 
 import javax.swing.*;
@@ -24,11 +25,11 @@ public class BlockPanel extends JPanel {
     private final BlockPanel This = this;
     private final int setIndex;
     private Point moveOffset;
-    private Point position;
     private double oldRatio = 1;
     private boolean snapped;
     private int inType;
     private int snapIndex;
+    private final int height;
 
     public BlockPanel(Block block) {
         setFocusable(false);
@@ -36,6 +37,8 @@ public class BlockPanel extends JPanel {
         setOpaque(false);
         this.block = block;
         this.block.setBlockPanel(this);
+        if (block.getBlockName().equals("While") || block.getBlockName().equals("If")) this.height = 250;
+        else this.height = 100;
         String file = block.getBlockName() + ".txt";
         try (InputStream inputStream = this.getClass().getResourceAsStream(file)) {
             BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(inputStream)));
@@ -56,7 +59,8 @@ public class BlockPanel extends JPanel {
                 int xLoc = Integer.parseInt(s[4]);
                 int yLoc = Integer.parseInt(s[5]);
                 imageComponents.get(index).addSnapPoint(connectionType, x, y, xLoc, yLoc);
-                if (connectionType == 2) imageComponents.get(index).setSnapIndex(Integer.parseInt(s[6]));
+                if (connectionType == 2 || connectionType == 4)
+                    imageComponents.get(index).setSnapIndex(Integer.parseInt(s[6]));
                 if (connectionType == 1) this.inType = 1;
                 if (connectionType == 3) this.inType = 3;
             }
@@ -91,23 +95,35 @@ public class BlockPanel extends JPanel {
                             ArrayList<Point> outSnapPoints = blockPanel.getSnapPoint(inType - 1);
                             ArrayList<Point> outSnapLocations = blockPanel.getSnapLocation(inType - 1);
                             ArrayList<Integer> outSnapIndexes = blockPanel.getSnapIndex(inType - 1);
+                            int out4index = outSnapIndexes.size();
+                            if (inType == 1) {
+                                outSnapPoints.addAll(blockPanel.getSnapPoint(4));
+                                outSnapLocations.addAll(blockPanel.getSnapLocation(4));
+                                outSnapIndexes.addAll(blockPanel.getSnapIndex(4));
+                            }
                             for (int i = 0; i < outSnapPoints.size(); i++) {
                                 Point outSnapPoint = outSnapPoints.get(i);
                                 if (outSnapPoint.distance(inSnapPoint) <= snapRadius) {
-                                    if (inType == 1 && blockPanel.block.getNext() == null) {
+                                    if ((inType == 1 && i < out4index) && blockPanel.block.getNext() == null) {
                                         This.snapped = true;
                                         blockPanel.block.setNext(This.block);
                                         This.block.setPrevious(blockPanel.block);
-                                    } else if (inType == 3 && blockPanel.block.getConnection(outSnapIndexes.get(i)) == null) {
+                                    } else if ((inType == 3 || (inType == 1 && i >= out4index)) && blockPanel.block.getConnection(outSnapIndexes.get(i)) == null) {
                                         This.snapped = true;
                                         blockPanel.block.setConnection(This.block, outSnapIndexes.get(i));
                                         This.block.setPrevious(blockPanel.block);
+                                        if (inType == 3) {
+                                            if (blockPanel.getBlockName().equals("Operator") && outSnapIndexes.get(i) == 0) {
+                                                operatorScale();
+                                            }
+                                        }
                                     }
                                     if (This.snapped) {
                                         Point point = outSnapLocations.get(i);
                                         snapIndex = i;
                                         dx = (int) (point.getX() - getX());
                                         dy = (int) (point.getY() - getY());
+                                        System.out.println(block.getBlockName() + " to " + blockPanel.block.getBlockName());
                                         break;
                                     }
                                 }
@@ -119,14 +135,18 @@ public class BlockPanel extends JPanel {
                 } else if (dx * dx + dy * dy >= snapRadius * snapRadius) {
                     snapped = false;
                     Block previous = This.block.getPrevious();
+                    System.out.println(block.getBlockName() + " from " + previous.getBlockName());
+                    operatorScale();
                     if (This.block == previous.getNext()) {
                         previous.setNext(null);
                     } else {
                         previous.removeConnection(This.block);
                     }
+                    recursiveAutoStretchStart();
                     This.block.setPrevious(null);
                     recursiveMove(dx, dy);
                 }
+                recursiveAutoStretchStart();
                 ((MainCanvasPanel) getParent()).setFocus(This);
                 revalidate();
                 repaint();
@@ -142,10 +162,32 @@ public class BlockPanel extends JPanel {
             imageComponents.get(setIndex).setTextString("");
             imageComponents.get(setIndex).setTextString(oldText);
         }
+        if (this.block instanceof Operator op) {
+            switch (op.getOperation()) {
+                case ADD -> {
+                    imageComponents.get(3).setTextString("+");
+                }
+                case SUB -> {
+                    imageComponents.get(3).setTextString("-");
+                }
+                case MUL -> {
+                    imageComponents.get(3).setTextString("*");
+                }
+                case DIV -> {
+                    imageComponents.get(3).setTextString("/");
+                }
+                case MOD -> {
+                    imageComponents.get(3).setTextString("%");
+                }
+                case UNDEFINED -> {
+                    imageComponents.get(3).setTextString("err");
+                }
+            }
+        }
     }
 
     private void recursiveMove(int dx, int dy) {
-        position = new Point(getX() + dx, getY() + dy);
+        Point position = new Point(getX() + dx, getY() + dy);
         setLocation(position);
         if (this.block.getNext() != null && this.block.getNext().getBlockPanel() != null)
             this.block.getNext().getBlockPanel().recursiveMove(dx, dy);
@@ -169,9 +211,11 @@ public class BlockPanel extends JPanel {
 
         //DEBUG connection points
         g.setColor(Color.WHITE);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             for (Point point : getSnapPoint(i)) {
                 point.translate(-getX(), -getY());
+                int a = (i) * (255) / (4);
+                g.setColor(new Color(a, a, a));
                 g.drawRect(point.x, point.y, 1, 1);
             }
         }
@@ -190,6 +234,19 @@ public class BlockPanel extends JPanel {
         oldRatio = ratio;
     }
 
+    public void update() {
+        for (ImageComponent imageComponent : imageComponents)
+            imageComponent.rescale(oldRatio);
+        int newWidth = (int) (getMaxWidth() * oldRatio);
+        int newHeight = (int) (getMaxHeight() * oldRatio);
+        int newX = getX();
+        int newY = getY();
+        setSize(newWidth, newHeight);
+        setLocation(newX, newY);
+        revalidate();
+        repaint();
+    }
+
     public void setPosition(int x, int y) {
         setLocation((int) (x * oldRatio), (int) (y * oldRatio));
     }
@@ -206,24 +263,74 @@ public class BlockPanel extends JPanel {
                 .max().orElse(0);
     }
 
-    public void stretchImage(ImageComponent imageComponent, int x, int y) {
-        imageComponent.stretch(x, y);
+    public void stretchImageX(int x) {
+        for (ImageComponent ic : this.imageComponents) {
+            if (ic.stretchableX()) {
+                stretchImageX(ic, x);
+                return;
+            }
+        }
+    }
+
+    public void stretchImageX(ImageComponent imageComponent, int x) {
+        imageComponent.stretchX(x);
         for (Integer index : imageComponent.getStretchX()) {
             imageComponents.get(index).moveOriginalPosition(x, 0);
         }
+        for (Block b : block.getConnections()) {
+            if (b == null) continue;
+            BlockPanel bp = b.getBlockPanel();
+            Point point = getSnapLocation(2).get(bp.snapIndex);
+            int dx = (int) (point.getX() - bp.getX());
+            int dy = (int) (point.getY() - bp.getY());
+            bp.recursiveMove(dx, dy);
+        }
+    }
+
+    public void stretchImageY(int y) {
+        ImageComponent imageComponent = null;
+        for (ImageComponent ic : this.imageComponents) {
+            if (ic.stretchableY()) {
+                imageComponent = ic;
+                break;
+            }
+        }
+        if (imageComponent == null) return;
+        imageComponent.stretchY(y);
         for (Integer index : imageComponent.getStretchY()) {
             imageComponents.get(index).moveOriginalPosition(0, y);
         }
-        if (x != 0) {
-            for (Block b : block.getConnections()) {
-                if (b == null) continue;
-                BlockPanel bp = b.getBlockPanel();
-                Point point = getSnapLocation(bp.inType - 1).get(bp.snapIndex);
-                int dx = (int) (point.getX() - bp.getX());
-                int dy = (int) (point.getY() - bp.getY());
-                bp.recursiveMove(dx, dy);
-            }
+        Block b = block.getNext();
+        if (b != null) {
+            BlockPanel bp = b.getBlockPanel();
+            Point point = getSnapLocation(0).get(bp.snapIndex);
+            int dx = (int) (point.getX() - bp.getX());
+            int dy = (int) (point.getY() - bp.getY());
+            bp.recursiveMove(dx, dy);
         }
+        update();
+    }
+
+    private void recursiveAutoStretchStart() {
+        Block s = this.block;
+        while (!s.getBlockName().equals("Start") && s.getPrevious() != null) {
+            s = s.getPrevious();
+        }
+        recursiveAutoStretch(s);
+    }
+
+    private void recursiveAutoStretch(Block s) {
+        while (s != null && !s.getBlockPanel().stretchableY()) {
+            s = s.getNext();
+        }
+        if (s == null) return;
+        if (s.getBlockPanel().stretchableY()) {
+            if (s.getConnection(0) != null)
+                s.getBlockPanel().stretchImageY(s.getConnection(0).getBlockPanel().getChainHeight());
+            else s.getBlockPanel().stretchImageY(0);
+        }
+        recursiveAutoStretch(s.getConnection(0));
+        recursiveAutoStretch(s.getNext());
     }
 
     public ArrayList<Point> getSnapPoint(int type) {
@@ -293,6 +400,25 @@ public class BlockPanel extends JPanel {
             imageComponents.get(setIndex).setTextString(oldText + c);
         }
         rescale(getParent().getHeight());
+        if (getBlockName().equals("Variable")) {
+            if (this.block.getPrevious() != null) {
+                operatorScale();
+            }
+        }
+    }
+
+    private void operatorScale() {
+        Block s = this.block.getPrevious();
+        if (s.getBlockName().equals("Operator")) {
+            do {
+                if (s.getConnection(0) != null)
+                    s.getBlockPanel().stretchImageX(s.getConnection(0).getBlockPanel().getChainWidth() - 50);
+                else
+                    s.getBlockPanel().stretchImageX(0);
+                s.getBlockPanel().rescale(getParent().getHeight());
+                s = s.getPrevious();
+            } while (s != null && s.getBlockName().equals("Operator"));
+        }
     }
 
     public String getBlockName() {
@@ -304,5 +430,30 @@ public class BlockPanel extends JPanel {
             return v.getPrint();
         }
         return null;
+    }
+
+    private int getChainHeight() {
+        int res = this.height;
+        if (stretchableY() && block.getConnection(0) != null)
+            res += block.getConnection(0).getBlockPanel().getChainHeight();
+        if (block.getNext() != null)
+            res += block.getNext().getBlockPanel().getChainHeight();
+        return res;
+    }
+
+    private boolean stretchableY() {
+        return this.height == 250;
+    }
+
+    private int getChainWidth() {
+        if (!this.getBlockName().equals("Operator") && !this.getBlockName().equals("Variable")) return 0;
+        int res;
+        if (this.getBlockName().equals("Operator")) res = 300;
+        else return getMaxWidth() - 50;
+        if (block.getConnection(0) != null)
+            res += block.getConnection(0).getBlockPanel().getChainWidth();
+        if (block.getConnection(1) != null)
+            res += block.getConnection(1).getBlockPanel().getChainHeight();
+        return res;
     }
 }

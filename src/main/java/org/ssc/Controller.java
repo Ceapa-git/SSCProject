@@ -26,6 +26,23 @@ public class Controller {
         //generateExample(start);
         mainWindow.addRunActionListener(e -> run(start, mainWindow));
         mainWindow.addBlocks(start);
+        mainWindow.addDebugStartTreeActionListener(e -> {
+            printTree(mainWindow,start,0);
+        });
+    }
+    private static void printTree(MainWindow mw, Block s,int indent){
+        if (s==null) return;
+        while(s!= null && !s.getBlockName().equals("While") && !s.getBlockName().equals("If")){
+            for(int i=0;i<indent;i++) mw.addText("   ");
+            mw.addTextNL(s.getBlockName());
+            s= s.getNext();
+        }
+        if(s!=null) {
+            for(int i=0;i<indent;i++) mw.addText("   ");
+            mw.addTextNL(s.getBlockName());
+            printTree(mw,s.getConnection(0), indent + 1);
+            printTree(mw,s.getNext(), indent);
+        }
     }
 
     private static void generateExample(Block start) {

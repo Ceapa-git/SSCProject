@@ -221,9 +221,14 @@ public class ImageComponent {
         if (hasText != 0) redrawText();
     }
 
-    public void stretch(int x, int y) {
+    public void stretchX(int x) {
         if (!stretchable) return;
-        stretch = new Point(x, y);
+        stretch = new Point(x, stretch.y);
+    }
+
+    public void stretchY(int y) {
+        if (!stretchable) return;
+        stretch = new Point(stretch.x, y);
     }
 
     public Integer[] getStretchX() {
@@ -307,8 +312,17 @@ public class ImageComponent {
         g2d.drawRect(0, 0, this.text.length() * charWidth - 1, height - 1);
         g2d.dispose();
         originalTextImage = new ImageIcon(bufferedTextImage).getImage();
-        blockPanel.stretchImage(this, this.text.length() * charWidth, 0);
+        blockPanel.stretchImageX(this, this.text.length() * charWidth);
         blockPanel.blockSetName(text);
         redrawText();
+    }
+
+    public boolean stretchableX(){
+        if (this.stretchX == null) return false;
+        return !this.stretchX.isEmpty();
+    }
+    public boolean stretchableY(){
+        if (this.stretchY == null) return false;
+        return !this.stretchY.isEmpty();
     }
 }
