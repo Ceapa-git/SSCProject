@@ -2,6 +2,8 @@ package org.ssc;
 
 import org.ssc.gui.MainWindow;
 import org.ssc.model.Block;
+import org.ssc.model.logic.If;
+import org.ssc.model.logic.While;
 import org.ssc.model.math.ComputeException;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
@@ -12,33 +14,52 @@ import org.ssc.model.variable.type.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class Controller {
+    private enum CondType {
+        IF,
+        WHILE
+    }
+
+    private static class StackEntry {
+        public StackEntry(Block block, CondType type) {
+            this.block = block;
+            this.type = type;
+        }
+
+        public Block block;
+        public CondType type;
+    }
+
     private static HashMap<String, Variable<?>> variables;
+    private static Stack<StackEntry> stack;
 
     public static void main(String[] args) {
         variables = new HashMap<>();
+        stack = new Stack<>();
         MainWindow mainWindow = new MainWindow();
         Block start = new Block();
         //generateExample(start);
         mainWindow.addRunActionListener(e -> run(start, mainWindow));
         mainWindow.addBlocks(start);
         mainWindow.addDebugStartTreeActionListener(e -> {
-            printTree(mainWindow,start,0);
+            printTree(mainWindow, start, 0);
         });
     }
-    private static void printTree(MainWindow mw, Block s,int indent){
-        if (s==null) return;
-        while(s!= null && !s.getBlockName().equals("While") && !s.getBlockName().equals("If")){
-            for(int i=0;i<indent;i++) mw.addText("   ");
+
+    private static void printTree(MainWindow mw, Block s, int indent) {
+        if (s == null) return;
+        while (s != null && !s.getBlockName().equals("While") && !s.getBlockName().equals("If")) {
+            for (int i = 0; i < indent; i++) mw.addText("   ");
             mw.addTextNL(s.getBlockName());
-            s= s.getNext();
+            s = s.getNext();
         }
-        if(s!=null) {
-            for(int i=0;i<indent;i++) mw.addText("   ");
+        if (s != null) {
+            for (int i = 0; i < indent; i++) mw.addText("   ");
             mw.addTextNL(s.getBlockName());
-            printTree(mw,s.getConnection(0), indent + 1);
-            printTree(mw,s.getNext(), indent);
+            printTree(mw, s.getConnection(0), indent + 1);
+            printTree(mw, s.getNext(), indent);
         }
     }
 
@@ -170,6 +191,7 @@ public class Controller {
         mainWindow.addTextNL("Running");
         try {
             while (current != null) {
+                boolean nextFromCond = false;
                 switch (current.getBlockName()) {
                     case "SetVariable": {
                         SetVariable block = (SetVariable) current;
@@ -209,14 +231,60 @@ public class Controller {
                         }
                         break;
                     }
+                    case "If": {
+                        If block = (If) current;
+                        Variable<?> value = compute(block.getConnection(1));
+                        if (value instanceof VInt vInt) {
+                            nextFromCond = true;
+                            if (vInt.getValue() != 0) {
+                                stack.push(new StackEntry(current, CondType.IF));
+                                current = current.getConnection(0);
+                            } else {
+                                current = current.getConnection(2);
+                            }
+                        } else {
+                            mainWindow.addTextNL("Error");
+                            mainWindow.addTextNL("Invalid type for if condition");
+                            return;
+                        }
+                        break;
+                    }
+                    case "While": {
+                        While block = (While) current;
+                        Variable<?> value = compute(block.getConnection(1));
+                        if (value instanceof VInt vInt) {
+                            nextFromCond = true;
+                            if (vInt.getValue() != 0) {
+                                stack.push(new StackEntry(current, CondType.WHILE));
+                                current = current.getConnection(0);
+                            } else {
+                                current = current.getConnection(2);
+                            }
+                        } else {
+                            mainWindow.addTextNL("Error");
+                            mainWindow.addTextNL("Invalid type for while condition");
+                            return;
+                        }
+                        break;
+                    }
                 }
-                current = current.getNext();
+                if (!nextFromCond)
+                    current = current.getNext();
+                while(current == null && !stack.isEmpty()){
+                    StackEntry entry = stack.pop();
+                    if (entry.type == CondType.IF){
+                        current = entry.block.getConnection(2);
+                    }
+                    else {
+                        current = entry.block;
+                    }
+                }
             }
         } catch (ComputeException e) {
             mainWindow.addTextNL("Error");
             mainWindow.addTextNL(e.getMessageString());
             return;
-        } catch (Exception e){
+        } catch (Exception e) {
             mainWindow.addTextNL("Error");
             mainWindow.addTextNL(e.getMessage());
             throw e;
@@ -225,7 +293,7 @@ public class Controller {
     }
 
     private static Variable<?> compute(Block current) throws ComputeException {
-        if (current == null) throw new ComputeException("No connection");
+        if (current == null) throw new ComputeException("Current null");
         if (current instanceof VName vName) {
             System.out.println(vName.getName());
             if (variables.containsKey(vName.getName()))
@@ -273,8 +341,7 @@ public class Controller {
                 case UNDEFINED: {
                 }
             }
-        }
-        else{
+        } else {
             throw new ComputeException("Wrong block");
         }
         return result;
