@@ -67,7 +67,6 @@ public class BlockPanel extends JPanel {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        setBorder(BorderFactory.createLineBorder(Color.YELLOW));
         imageComponents.get(0).addDrag(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -206,17 +205,6 @@ public class BlockPanel extends JPanel {
         for (ImageComponent imageComponent : imageComponents) {
             if (imageComponent.isText() != 0) {
                 g.drawImage(imageComponent.getText(), (int) imageComponent.getPosition().getX() + imageComponent.getTextOffset(), 0, this);
-            }
-        }
-
-        //DEBUG connection points
-        g.setColor(Color.WHITE);
-        for (int i = 0; i < 5; i++) {
-            for (Point point : getSnapPoint(i)) {
-                point.translate(-getX(), -getY());
-                int a = (i) * (255) / (4);
-                g.setColor(new Color(a, a, a));
-                g.drawRect(point.x, point.y, 1, 1);
             }
         }
     }

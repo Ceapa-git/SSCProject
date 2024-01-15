@@ -75,8 +75,6 @@ public class ImageComponent {
             BufferedImage croppedImage = new BufferedImage(crop.width, crop.height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = croppedImage.createGraphics();
             g2d.drawImage(bufferedImage, 0, 0, crop.width, crop.height, crop.x, crop.y, crop.x + crop.width, crop.y + crop.height, null);
-            g2d.setColor(Color.green);
-            g2d.drawRect(0, 0, crop.width - 1, crop.height - 1);
             g2d.dispose();
 
             originalImage = new ImageIcon(croppedImage).getImage();
@@ -86,7 +84,6 @@ public class ImageComponent {
                 area = new Rectangle(Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]), Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]));
                 draggableArea = new JLabel();
                 draggableArea.setBounds(area);
-                draggableArea.setBorder(BorderFactory.createLineBorder(Color.RED));
                 originalPosition = new Point(0, 0);
             } else {
                 draggableArea = null;
@@ -132,8 +129,6 @@ public class ImageComponent {
                 int ascent = fontMetrics.getAscent();
                 int descent = fontMetrics.getDescent();
                 g2d.drawString(this.text, 0, (height - (ascent + descent)) / 2 + ascent);
-                g2d.setColor(Color.cyan);
-                g2d.drawRect(0, 0, width - 1, height - 1);
                 g2d.dispose();
                 originalTextImage = new ImageIcon(bufferedTextImage).getImage();
                 textImage = new ImageIcon(bufferedTextImage).getImage();
@@ -308,8 +303,6 @@ public class ImageComponent {
         int ascent = fontMetrics.getAscent();
         int descent = fontMetrics.getDescent();
         g2d.drawString(this.text, 0, (height - (ascent + descent)) / 2 + ascent);
-        g2d.setColor(Color.cyan);
-        g2d.drawRect(0, 0, this.text.length() * charWidth - 1, height - 1);
         g2d.dispose();
         originalTextImage = new ImageIcon(bufferedTextImage).getImage();
         blockPanel.stretchImageX(this, this.text.length() * charWidth);
