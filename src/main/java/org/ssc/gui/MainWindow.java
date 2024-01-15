@@ -10,6 +10,7 @@ import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
 import org.ssc.model.variable.SetVariable;
+import org.ssc.model.variable.type.VName;
 import org.ssc.model.variable.type.VArray;
 import org.ssc.model.variable.type.VChar;
 import org.ssc.model.variable.type.VFloat;
@@ -107,6 +108,7 @@ public class MainWindow extends JFrame {
             mainMenuPanel.showVariable();
             categoryUpdate(mainMenuPanel);
         });
+        mainMenuPanel.getVariablePanel().addButtonActionListener("Variable", e -> addBlocks(new VName()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Int", e -> addBlocks(new VInt()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Float", e -> addBlocks(new VFloat()));
         mainMenuPanel.getVariablePanel().addButtonActionListener("Char", e -> addBlocks(new VChar()));

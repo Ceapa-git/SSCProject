@@ -3,6 +3,7 @@ package org.ssc.gui.panels.menu;
 public class VariablePanel extends CategoryPanel {
     public VariablePanel() {
         super();
+        addButton("Variable");
         addButton("Int");
         addButton("Float");
         addButton("Char");

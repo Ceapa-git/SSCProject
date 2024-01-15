@@ -8,10 +8,7 @@ import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
 import org.ssc.model.variable.SetVariable;
 import org.ssc.model.variable.Variable;
-import org.ssc.model.variable.type.VArray;
-import org.ssc.model.variable.type.VChar;
-import org.ssc.model.variable.type.VFloat;
-import org.ssc.model.variable.type.VInt;
+import org.ssc.model.variable.type.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -219,55 +216,66 @@ public class Controller {
             mainWindow.addTextNL("Error");
             mainWindow.addTextNL(e.getMessageString());
             return;
+        } catch (Exception e){
+            mainWindow.addTextNL("Error");
+            mainWindow.addTextNL(e.getMessage());
+            throw e;
         }
         mainWindow.addTextNL("Finished Successfully");
     }
 
     private static Variable<?> compute(Block current) throws ComputeException {
         if (current == null) throw new ComputeException("No connection");
+        if (current instanceof VName vName) {
+            System.out.println(vName.getName());
+            if (variables.containsKey(vName.getName()))
+                return variables.get(vName.getName()).cloneVariable();
+            else {
+                throw new ComputeException(vName.getName() + " not initialized");
+            }
+        }
         if (current instanceof Variable<?>) return (Variable<?>) current;
-        Variable<?> value1, value2;//todo
-        // considerat daca nu trebuie in switch la operator
+        Variable<?> value1, value2;
         Variable<?> result = new VInt();
 
         if (current.getConnection(0) == null) throw new ComputeException("No connections");
         if (current.getConnection(1) == null) throw new ComputeException("Not enough connections");
 
         if (!(current.getConnection(0) instanceof Variable<?>)) value1 = compute(current.getConnection(0));
+        else if (current.getConnection(0) instanceof VName) value1 = compute(current.getConnection(0));
         else value1 = (Variable<?>) current.getConnection(0);
         if (!(current.getConnection(1) instanceof Variable<?>)) value2 = compute(current.getConnection(1));
-        else value2 = (Variable<?>) current.getConnection(1);//pana aici todoul
+        else if (current.getConnection(1) instanceof VName) value2 = compute(current.getConnection(1));
+        else value2 = (Variable<?>) current.getConnection(1);
 
-        switch (current.getBlockName()) {
-            case "Operator": {
-                switch (((Operator) current).getOperation()) {
-                    case ADD: {
-                        result = value1.add(value2);
-                        break;
-                    }
-                    case SUB: {
-                        result = value1.sub(value2);
-                        break;
-                    }
-                    case MUL: {
-                        result = value1.mul(value2);
-                        break;
-                    }
-                    case DIV: {
-                        result = value1.div(value2);
-                        break;
-                    }
-                    case MOD: {
-                        result = value1.mod(value2);
-                        break;
-                    }
-                    case UNDEFINED: {
-                    }
+        if (current.getBlockName().equals("Operator")) {
+            switch (((Operator) current).getOperation()) {
+                case ADD: {
+                    result = value1.add(value2);
+                    break;
+                }
+                case SUB: {
+                    result = value1.sub(value2);
+                    break;
+                }
+                case MUL: {
+                    result = value1.mul(value2);
+                    break;
+                }
+                case DIV: {
+                    result = value1.div(value2);
+                    break;
+                }
+                case MOD: {
+                    result = value1.mod(value2);
+                    break;
+                }
+                case UNDEFINED: {
                 }
             }
-            default: {
-                break;
-            }
+        }
+        else{
+            throw new ComputeException("Wrong block");
         }
         return result;
     }
