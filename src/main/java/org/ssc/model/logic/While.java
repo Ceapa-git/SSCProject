@@ -7,6 +7,5 @@ public class While extends Block {
         this.blockName = "While";
         this.addConnection(null);
         this.addConnection(null);
-        this.addConnection(null);
     }
 }

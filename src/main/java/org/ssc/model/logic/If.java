@@ -7,6 +7,5 @@ public class If extends Block {
         this.blockName = "If";
         this.addConnection(null);
         this.addConnection(null);
-        this.addConnection(null);
     }
 }

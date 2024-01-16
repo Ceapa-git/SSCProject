@@ -122,7 +122,6 @@ public class BlockPanel extends JPanel {
                                         snapIndex = i;
                                         dx = (int) (point.getX() - getX());
                                         dy = (int) (point.getY() - getY());
-                                        System.out.println(block.getBlockName() + " to " + blockPanel.block.getBlockName());
                                         break;
                                     }
                                 }
@@ -134,7 +133,6 @@ public class BlockPanel extends JPanel {
                 } else if (dx * dx + dy * dy >= snapRadius * snapRadius) {
                     snapped = false;
                     Block previous = This.block.getPrevious();
-                    System.out.println(block.getBlockName() + " from " + previous.getBlockName());
                     operatorScale();
                     if (This.block == previous.getNext()) {
                         previous.setNext(null);

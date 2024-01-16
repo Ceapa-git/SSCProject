@@ -45,7 +45,7 @@ public class MainMenuPanel extends JPanel {
         blockCategoryInnerPanel.add(close);
         debugStartTree = new JButton("debugStartTree");
         debugStartTree.setFocusable(false);
-        blockCategoryInnerPanel.add(debugStartTree);
+        //blockCategoryInnerPanel.add(debugStartTree);
 
         blockCategoryPanel.add(blockCategoryInnerPanel);
         blockCategoryLayout.putConstraint(SpringLayout.NORTH, blockCategoryInnerPanel, 0, SpringLayout.NORTH, blockCategoryPanel);

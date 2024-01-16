@@ -57,32 +57,20 @@ public class Block {
         this.next = next;
     }
 
-    public boolean removeConnection(Block connection) {
-        if (!this.connections.contains(connection)) return false;
+    public void removeConnection(Block connection) {
+        if (!this.connections.contains(connection)) return;
         this.connections.set(this.connections.indexOf(connection), null);
-        return true;
     }
 
-    public boolean removeConnection(int id) {
-        if (id < 0 || id > this.connections.size() || this.connections.get(id) == null) return false;
-        this.connections.set(id, null);
-        return true;
-    }
-
-    public int addConnection(Block connection) {
+    public void addConnection(Block connection) {
         this.connections.add(connection);
-        return this.connections.indexOf(connection);
+        this.connections.indexOf(connection);
     }
 
-    public boolean setConnection(Block connection) {
-        return setConnection(connection, 0);
-    }
-
-    public boolean setConnection(Block connection, int id) {
-        if (id < 0 || id > this.connections.size()) return false;
+    public void setConnection(Block connection, int id) {
+        if (id < 0 || id > this.connections.size()) return;
         this.connections.set(id, connection);
         this.connections.get(this.connections.indexOf(connection)).setPrevious(this);
-        return true;
     }
 
     public int getNumberOfConnections() {

@@ -5,6 +5,7 @@ import org.ssc.model.Block;
 import org.ssc.model.logic.If;
 import org.ssc.model.logic.While;
 import org.ssc.model.math.ComputeException;
+import org.ssc.model.math.InvalidOperation;
 import org.ssc.model.math.Operator;
 import org.ssc.model.variable.ChangeVariable;
 import org.ssc.model.variable.PrintVariable;
@@ -12,7 +13,6 @@ import org.ssc.model.variable.SetVariable;
 import org.ssc.model.variable.Variable;
 import org.ssc.model.variable.type.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
@@ -40,7 +40,6 @@ public class Controller {
         stack = new Stack<>();
         MainWindow mainWindow = new MainWindow();
         Block start = new Block();
-        //generateExample(start);
         mainWindow.addRunActionListener(e -> run(start, mainWindow));
         mainWindow.addBlocks(start);
         mainWindow.addDebugStartTreeActionListener(e -> {
@@ -61,128 +60,6 @@ public class Controller {
             printTree(mw, s.getConnection(0), indent + 1);
             printTree(mw, s.getNext(), indent);
         }
-    }
-
-    private static void generateExample(Block start) {
-        Block current = start;
-
-        VInt amount1 = new VInt();
-        amount1.setValue(10);
-        VInt amount2 = new VInt();
-        amount2.setValue(20);
-        VInt amount3 = new VInt();
-        amount3.setValue(20);
-
-        current.setNext(new SetVariable("a"));
-        current = current.getNext();
-        current.setConnection(amount1);
-
-        current.setNext(new PrintVariable("a"));
-        current = current.getNext();
-
-        current.setNext(new SetVariable("a"));
-        current = current.getNext();
-        current.setConnection(amount2);
-
-        current.setNext(new PrintVariable("a"));
-        current = current.getNext();
-
-        current.setNext(new ChangeVariable("a"));
-        current = current.getNext();
-        current.setConnection(amount3);
-
-        current.setNext(new PrintVariable("a"));
-        current = current.getNext();
-
-        //----------------------------------------------------
-
-        VFloat floatAmount1 = new VFloat();
-        floatAmount1.setValue(1.234f);
-        VFloat floatAmount2 = new VFloat();
-        floatAmount2.setValue(5.678);
-
-        current.setNext(new SetVariable("b"));
-        current = current.getNext();
-        current.setConnection(floatAmount1);
-
-        current.setNext(new PrintVariable("b"));
-        current = current.getNext();
-
-        current.setNext(new ChangeVariable("b"));
-        current = current.getNext();
-        current.setConnection(floatAmount2);
-
-        current.setNext(new PrintVariable("b"));
-        current = current.getNext();
-
-        //----------------------------------------------------
-
-        VChar c = new VChar();
-        c.setValue('c');
-        VInt charAmount = new VInt();
-        charAmount.setValue(1);
-
-        current.setNext(new SetVariable("c"));
-        current = current.getNext();
-        current.setConnection(c);
-
-        current.setNext(new PrintVariable("c"));
-        current = current.getNext();
-
-        current.setNext(new ChangeVariable("c"));
-        current = current.getNext();
-        current.setConnection(charAmount);
-
-        current.setNext(new PrintVariable("c"));
-        current = current.getNext();
-
-        //----------------------------------------------------
-
-        VArray<VChar> string = new VArray<>(new VChar());
-        string.setValue(new ArrayList<VChar>());
-        string.getValue().add(c);
-        string.getValue().add(c);
-        string.getValue().add(c);
-
-        current.setNext(new SetVariable("d"));
-        current = current.getNext();
-        current.setConnection(string);
-
-        current.setNext(new PrintVariable("d"));
-        current = current.getNext();
-
-        //----------------------------------------------------
-
-        VArray<VInt> intArray = new VArray<>();
-        intArray.setValue(new ArrayList<VInt>());
-        intArray.getValue().add(amount1);
-        intArray.getValue().add(amount2);
-        intArray.getValue().add(amount3);
-
-        current.setNext(new SetVariable("e"));
-        current = current.getNext();
-        current.setConnection(intArray);
-
-        current.setNext(new PrintVariable("e"));
-        current = current.getNext();
-
-        //----------------------------------------------------
-
-        VInt int1 = new VInt();
-        int1.setValue(15);
-        VInt int2 = new VInt();
-        int2.setValue(21);
-
-        current.setNext(new PrintVariable("a"));
-        current = current.getNext();
-
-        current.setNext(new SetVariable("a"));
-        current = current.getNext();
-        current.setConnection(new Operator(Operator.Operation.MUL));
-        current.getConnection(0).setConnection(int1, 0);
-        current.getConnection(0).setConnection(int2, 1);
-
-        current.setNext(new PrintVariable("a"));
     }
 
     private static void run(Block start, MainWindow mainWindow) {
@@ -240,7 +117,7 @@ public class Controller {
                                 stack.push(new StackEntry(current, CondType.IF));
                                 current = current.getConnection(0);
                             } else {
-                                current = current.getConnection(2);
+                                current = current.getNext();
                             }
                         } else {
                             mainWindow.addTextNL("Error");
@@ -258,7 +135,7 @@ public class Controller {
                                 stack.push(new StackEntry(current, CondType.WHILE));
                                 current = current.getConnection(0);
                             } else {
-                                current = current.getConnection(2);
+                                current = current.getNext();
                             }
                         } else {
                             mainWindow.addTextNL("Error");
@@ -273,7 +150,7 @@ public class Controller {
                 while(current == null && !stack.isEmpty()){
                     StackEntry entry = stack.pop();
                     if (entry.type == CondType.IF){
-                        current = entry.block.getConnection(2);
+                        current = entry.block.getNext();
                     }
                     else {
                         current = entry.block;
@@ -283,6 +160,10 @@ public class Controller {
         } catch (ComputeException e) {
             mainWindow.addTextNL("Error");
             mainWindow.addTextNL(e.getMessageString());
+            return;
+        }catch (InvalidOperation e){
+            mainWindow.addTextNL("Error");
+            mainWindow.addTextNL("Invalid Operation");
             return;
         } catch (Exception e) {
             mainWindow.addTextNL("Error");
@@ -295,7 +176,6 @@ public class Controller {
     private static Variable<?> compute(Block current) throws ComputeException {
         if (current == null) throw new ComputeException("Current null");
         if (current instanceof VName vName) {
-            System.out.println(vName.getName());
             if (variables.containsKey(vName.getName()))
                 return variables.get(vName.getName()).cloneVariable();
             else {
